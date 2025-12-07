@@ -1,0 +1,68 @@
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.layout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+/* Fix для aside - ограничиваем ширину и добавляем обработку содержимого */
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto; /* Добавляем прокрутку если содержимое не помещается */
+}
+
+/* Убедитесь, что SidebarFilters не выходит за границы */
+.sidebar > * {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  min-width: 0; /* Это важно для flex-элементов */
+  overflow: visible;
+}
+
+/* Альтернативный вариант с CSS Grid - более стабильный */
+.layoutGrid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+/* Фикс для мобильных */
+@media (max-width: 1024px) {
+  .layout {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .layoutGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .sidebar {
+    width: 100%;
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+}

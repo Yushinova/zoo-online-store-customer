@@ -1,0 +1,334 @@
+.navigationBar {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+/* Контейнер навигации */
+.navContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Список навигации */
+.navList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1px;
+}
+
+
+.navList::-webkit-scrollbar {
+  display: none;
+}
+
+/* Элемент навигации */
+.navItem {
+  flex: 1 1 auto;
+  min-width: 120px;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.navItem:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.navItem::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background-color: #FFEB3B;
+  transition: width 0.3s ease;
+}
+
+.navItem:hover::after {
+  width: 80%;
+}
+
+/* Особый элемент "Акции" */
+.specialItem {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+}
+
+.specialItem:hover {
+  background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+}
+
+/* Ссылка навигации */
+.navLink {
+  display: block;
+  padding: 16px 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  transition: all 0.2s ease;
+  height: 100%;
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: #FFEB3B;
+}
+
+/* Текст навигации */
+.navText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Бейдж для акций */
+.saleBadge {
+  font-size: 14px;
+  animation: pulse 1.5s infinite;
+  margin-left: 4px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Состояние загрузки */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  gap: 12px;
+  color: white;
+}
+
+.loadingSpinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Состояние ошибки */
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.errorText {
+  color: #FFEB3B;
+  font-weight: 500;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+
+/* Планшеты (768px и меньше) */
+@media (max-width: 768px) {
+  .navContainer {
+    padding: 0 10px;
+  }
+  
+  .navList {
+    justify-content: flex-start;
+    padding: 5px 0;
+  }
+  
+  .navItem {
+    flex: 0 0 auto;
+    min-width: 110px;
+    margin-right: 2px;
+  }
+  
+  .navLink {
+    padding: 14px 6px;
+    font-size: 15px;
+  }
+  
+  .saleBadge {
+    font-size: 13px;
+  }
+}
+
+/* Мобильные телефоны (480px и меньше) */
+@media (max-width: 480px) {
+  .navContainer {
+    padding: 0 5px;
+  }
+  
+  .navItem {
+    min-width: 100px;
+  }
+  
+  .navLink {
+    padding: 12px 4px;
+    font-size: 14px;
+  }
+  
+  .saleBadge {
+    font-size: 12px;
+    display: none; /* Скрываем бейдж на маленьких экранах */
+  }
+}
+
+/* Очень маленькие телефоны (360px и меньше) */
+@media (max-width: 360px) {
+  .navItem {
+    min-width: 90px;
+  }
+  
+  .navLink {
+    padding: 10px 4px;
+    font-size: 13px;
+  }
+}
+
+/* Выпадающее меню */
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  min-width: 100%;
+}
+
+.dropdownContent {
+  background: white;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  border-top: 2px solid #f39c12;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownHeader {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.dropdownTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.categoryList {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.categoryItem {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.categoryItem:last-child {
+  border-bottom: none;
+}
+
+.categoryLink {
+  display: block;
+  padding: 14px 20px;
+  text-decoration: none;
+  color: #333;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+}
+
+.categoryLink:hover {
+  background-color: #f8f9fa;
+  color: #667eea;
+}
+
+.categoryLink.activeCategory {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.categoryLink.activeCategory .categoryArrow {
+  opacity: 1;
+  color: #1976d2;
+}
+
+.categoryName {
+  flex: 1;
+}
+
+.categoryArrow {
+  color: #666;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.categoryLink:hover .categoryArrow {
+  opacity: 1;
+}
+
+.dropdownFooter {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #eaeaea;
+  text-align: center;
+}
+
+.allCategoriesLink {
+  font-size: 14px;
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+
+.allCategoriesLink:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}

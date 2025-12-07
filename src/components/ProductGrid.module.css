@@ -1,0 +1,213 @@
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  overflow: visible;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 карточки в ряд */
+  gap: 20px;
+  width: 100%;
+  align-items: start;
+}
+
+.productCount {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+}
+
+/* Кнопка "Загрузить еще" */
+.loadMoreContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px 0;
+  gap: 15px;
+}
+
+.loadMoreButton {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.loadMoreButton:hover:not(:disabled) {
+  background: #357ae8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.loadMoreButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Сообщение, что все товары загружены */
+.noMoreContainer {
+  text-align: center;
+  margin: 30px 0;
+  padding: 20px;
+  border-top: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.noMoreText {
+  color: #666;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Состояния загрузки и ошибок */
+.loadingContainer,
+.errorContainer,
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4a90e2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.errorMessage {
+  color: #e74c3c;
+  font-size: 16px;
+  text-align: center;
+}
+
+.retryButton {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.retryButton:hover {
+  background: #357ae8;
+}
+
+.emptyMessage {
+  font-size: 18px;
+  color: #666;
+  text-align: center;
+}
+
+.emptySubmessage {
+  font-size: 14px;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+  .productsGrid {
+    grid-template-columns: repeat(3, 1fr); /* 3 карточки на средних экранах */
+  }
+}
+
+@media (max-width: 900px) {
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr); /* 2 карточки на планшетах */
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .productsGrid {
+    grid-template-columns: 1fr; /* 1 карточка на телефонах */
+    gap: 15px;
+  }
+  
+  .container {
+    padding: 0 10px;
+  }
+  
+  .title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .productCount {
+    font-size: 13px;
+    padding: 8px;
+  }
+  
+  .loadMoreButton {
+    padding: 10px 24px;
+    font-size: 15px;
+    min-width: 160px;
+  }
+  
+  .pageInfo {
+    font-size: 12px;
+  }
+}

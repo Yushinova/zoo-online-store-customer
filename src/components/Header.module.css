@@ -1,0 +1,367 @@
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 70px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid #4CAF50;
+  box-sizing: border-box;
+}
+
+/* Общие стили для всех 4 секций */
+.header > div {
+  flex: 0 0 25%; /* Каждая секция занимает 25% ширины */
+  max-width: 25%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+/* Часть 1: Логотип */
+.logoSection {
+  justify-content: flex-start;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  text-decoration: none;
+}
+
+.logo {
+  height: 100%;
+  object-fit: contain;
+  max-height: 60px;
+  width: auto;
+}
+
+/* Часть 2: Поиск */
+.searchSection {
+  justify-content: center;
+}
+
+.searchForm {
+  display: flex;
+  width: 100%;
+  max-width: 300px;
+  height: 36px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 0 12px;
+  border: 1px solid #4CAF50;
+  border-right: none;
+  border-radius: 18px 0 0 18px;
+  font-size: 14px;
+  outline: none;
+  min-width: 0;
+}
+
+.searchInput:focus {
+  border-color: #388E3C;
+}
+
+.searchButton {
+  padding: 0 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: 1px solid #4CAF50;
+  border-radius: 0 18px 18px 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.searchButton:hover {
+  background-color: #388E3C;
+}
+
+/* Часть 3: Телефон и соцсети */
+.contactsSection {
+  justify-content: right; 
+  flex-direction: row;
+  gap: 4px;
+}
+
+.phoneWrapper {
+  display: flex;
+  justify-content: right;
+  width: 100%;
+}
+
+.phone {
+  font-size: 30px;
+  font-weight: 600;
+  color: #333;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.phone:hover {
+  color: #4CAF50;
+}
+
+.socialWrapper {
+  display: flex;
+  justify-content: right;
+  gap: 15px;
+  width: 100%;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.socialLink:hover {
+  transform: scale(1.1);
+}
+
+.socialIcon {
+  opacity: 0.85;
+}
+
+/* Часть 4: Профиль и корзина */
+.userSection {
+  justify-content: right;
+  gap: 20px;
+}
+
+.profileWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.profileLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #333;
+  transition: color 0.2s;
+}
+
+.profileLink:hover {
+  color: #4CAF50;
+}
+
+.profileIcon {
+  border-radius: 50%;
+  padding: 4px;
+  background-color: #f5f5f5;
+  transition: background-color 0.2s;
+}
+
+.profileLink:hover .profileIcon {
+  background-color: #e0f7e0;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Корзина */
+.cartWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.cartLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.cartContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cartIcon {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+  transition: transform 0.2s;
+}
+
+.cartLink:hover .cartIcon {
+  transform: scale(1.1);
+}
+
+.cartCount {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #FF5722;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .header {
+    height: 60px;
+  }
+  
+  .logo {
+    height: auto;
+    max-width: 250px;
+  }
+  
+  .searchForm {
+    max-width: 250px;
+    height: 32px;
+  }
+  
+  .searchInput {
+    font-size: 13px;
+    padding: 0 10px;
+  }
+  
+  .searchButton {
+    font-size: 13px;
+    padding: 0 12px;
+  }
+  
+  .phone {
+    font-size: 14px;
+  }
+  
+  .socialIcon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .socialWrapper {
+    gap: 10px;
+  }
+  
+  .userSection {
+    gap: 15px;
+    padding-right: 15px;
+  }
+  
+  .profileIcon, .cartIcon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .userName {
+    font-size: 13px;
+    max-width: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 60px;
+    padding: 10px 0;
+  }
+  
+  .header > div {
+    flex: 0 0 50%;
+    max-width: 50%;
+    height: 40px;
+    justify-content: center;
+  }
+  
+  .logoSection {
+    order: 1;
+    justify-content: flex-start;
+    padding-left: 15px;
+  }
+  
+  .contactsSection {
+    order: 2;
+    justify-content: flex-end;
+    padding-right: 15px;
+  }
+  
+  .searchSection {
+    order: 3;
+    justify-content: flex-start;
+    padding-left: 15px;
+  }
+  
+  .userSection {
+    order: 4;
+    justify-content: flex-end;
+    padding-right: 15px;
+  }
+  
+  .contactsSection {
+    flex-direction: row;
+    gap: 10px;
+  }
+  
+  .phoneWrapper {
+    width: auto;
+  }
+  
+  .socialWrapper {
+    width: auto;
+  }
+  
+  .userName {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .header > div {
+    flex: 0 0 100%;
+    max-width: 100%;
+    justify-content: center !important;
+    padding: 5px 15px !important;
+  }
+  
+  .logoSection {
+    order: 1;
+    height: 50px;
+  }
+  
+  .searchSection {
+    order: 2;
+  }
+  
+  .contactsSection {
+    order: 3;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .userSection {
+    order: 4;
+    justify-content: center;
+    gap: 30px;
+    padding-right: 0 !important;
+  }
+  
+  .socialWrapper {
+    gap: 15px;
+  }
+}

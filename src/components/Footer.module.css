@@ -1,0 +1,327 @@
+.footer {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  color: white;
+  padding: 25px 0 15px;
+  margin-top: auto;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+/* Элемент футера */
+.footerItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.itemIcon {
+  font-size: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Телефон */
+.phone {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.phone:hover {
+  color: #FFEB3B;
+}
+
+/* Напишите нам */
+.writeUs {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.writeUs:hover {
+  color: #FFEB3B;
+  text-decoration: underline;
+}
+
+/* Соцсети */
+.socialIcons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.socialLink:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.vkLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #0077FF;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.vkLink:hover {
+  background: #0066DD;
+  transform: scale(1.1);
+}
+
+/* Подзаголовок для всех элементов */
+.itemSubtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Копирайт */
+.copyright {
+  max-width: 1200px;
+  margin: 25px auto 0;
+  padding: 15px 20px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.copyright p {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.privacyLink {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.privacyLink:hover {
+  color: #FFEB3B;
+  text-decoration: underline;
+}
+
+/* Сообщение о куках (как в первом варианте, но компактнее) */
+.cookieNotice {
+  background-color: white;
+  padding: 15px 20px;
+  border-top: 3px solid #4CAF50;
+  position: sticky;
+  bottom: 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cookieContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .cookieContent {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.cookieText {
+  color: #333;
+  font-size: 14px;
+  line-height: 1.4;
+  flex: 1;
+  margin: 0;
+}
+
+.cookieButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.cookieAcceptButton,
+.cookieDeclineButton {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cookieAcceptButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cookieAcceptButton:hover {
+  background-color: #388E3C;
+}
+
+.cookieDeclineButton {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.cookieDeclineButton:hover {
+  background-color: #e0e0e0;
+}
+
+.cookiePolicyLink {
+  color: #4CAF50;
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.cookiePolicyLink:hover {
+  text-decoration: underline;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .footerContent {
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+  }
+  
+  .footerItem {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+  
+  .copyright {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .cookieContent {
+    text-align: center;
+  }
+  
+  .cookieButtons {
+    justify-content: center;
+  }
+}
+.appLinks{
+    display: flex;
+    flex-direction: row;
+}
+@media (max-width: 480px) {
+
+    .appLinks{
+    flex-direction: column;
+}
+  .footer {
+    padding: 20px 0 12px;
+  }
+  
+  .footerContent {
+    padding: 0 15px;
+    gap: 20px;
+  }
+  
+  .footerItem {
+    min-width: auto;
+    gap: 12px;
+  }
+  
+  .itemIcon {
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+  }
+  
+  .phone,
+  .writeUs {
+    font-size: 16px;
+  }
+  
+  .socialLink,
+  .vkLink {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .socialLink img {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .vkLink {
+    font-size: 12px;
+  }
+  
+  .cookieNotice {
+    padding: 12px 15px;
+  }
+  
+  .cookieText {
+    font-size: 13px;
+  }
+
+}

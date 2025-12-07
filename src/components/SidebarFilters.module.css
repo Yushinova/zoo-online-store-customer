@@ -1,0 +1,202 @@
+.sidebar {
+  width: 100%; /* Занимает всю ширину родителя */
+  max-width: 100%; /* Не выходит за границы */
+  box-sizing: border-box; /* Учитываем padding в ширине */
+  overflow: hidden; /* Скрываем переполнение */
+}
+.sidebar * {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.textInput,
+.numberInput,
+.selectInput {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.resetButton {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  color: #666;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resetButton:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Поля ввода и селекты */
+.inputGroup {
+  width: 100%;
+}
+
+.textInput,
+.numberInput,
+.selectInput {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.textInput:focus,
+.numberInput:focus,
+.selectInput:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.textInput::placeholder {
+  color: #999;
+}
+
+.numberInput::-webkit-inner-spin-button,
+.numberInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.numberInput {
+  -moz-appearance: textfield;
+}
+
+.priceRange {
+  display: flex;
+  gap: 10px;
+}
+
+.priceRange .inputGroup {
+  flex: 1;
+}
+
+.inputLabel {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.selectGroup {
+  width: 100%;
+  position: relative;
+}
+
+.selectInput {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 35px;
+}
+
+.loadingIndicator {
+  position: absolute;
+  right: 35px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #999;
+}
+
+/* Чекбоксы */
+.checkboxGroup {
+  margin-top: 8px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxInput {
+  display: none;
+}
+
+.checkboxCustom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.checkboxInput:checked + .checkboxCustom {
+  background: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.checkboxInput:checked + .checkboxCustom::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 100%;
+    position: static;
+    margin-bottom: 20px;
+  }
+  
+  .priceRange {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
