@@ -7,17 +7,18 @@ import styles from './ProductsPage.module.css';
 export default function ProductsPage({ initialFilters = {} }) {
   const isInitialMount = useRef(true);
   const [filters, setFilters] = useState({
-    isPromotion: false,
+    isPromotion: null,
     categoryId: '',
-    categoryName: '', // ← Добавляем название категории
+    categoryName: '',
     petTypeId: '',
-    petTypeName: '', // ← Добавляем название типа животного
+    petTypeName: '',
     name: '',
     brand: '',
     minPrice: '',
     maxPrice: '',
     rating: '',
-    isActive: ''
+    isActive: '',
+    filterType: ''
   });
 
   // Принимаем фильтры из навигации ТОЛЬКО если не первая загрузка
@@ -30,7 +31,7 @@ export default function ProductsPage({ initialFilters = {} }) {
         categoryName: initialFilters.categoryName ?? '',
         petTypeId: initialFilters.petTypeId ?? '',
         petTypeName: initialFilters.petTypeName ?? '',
-        filterType: initialFilters.filterType // Тип фильтра (sales и т.д.)
+        filterType: initialFilters.filterType?? ''  // Тип фильтра (sales и т.д.)
       }));
     }
     isInitialMount.current = false;
@@ -38,7 +39,7 @@ export default function ProductsPage({ initialFilters = {} }) {
 
   // Функция для генерации заголовка на основе фильтров
   const generateTitle = useMemo(() => {
-     if (!filters.isPromotion && 
+    if (!filters.isPromotion && 
       !filters.categoryId && 
       !filters.petTypeId && 
       !filters.name && 
@@ -47,8 +48,9 @@ export default function ProductsPage({ initialFilters = {} }) {
       !filters.minPrice && 
       !filters.maxPrice && 
       !filters.isActive) {
-    return "Все товары"; // ← Заголовок при сбросе
-  }
+      return "Все товары";
+    }
+    
     const parts = [];
     
     // 1. Тип животного (если есть название)
@@ -84,22 +86,21 @@ export default function ProductsPage({ initialFilters = {} }) {
       parts.push(priceRange.join(' '));
     }
     
-    // 7. Акционные товары
-    if (filters.isPromotion === false) {
-      parts.push('Акционные товары');
-    }
-    
     // 8. Наличие
     if (filters.isActive !== '' && filters.isActive !== null) {
       parts.push(filters.isActive ? 'в наличии' : 'нет в наличии');
     }
 
+    //9. Из навигации Акции
+    if(filters.filterType === 'sales' || filters.isPromotion === true){
+      parts.push('Акционные товары');
+    }
+    
     // Генерация заголовка
     if (parts.length > 0) {
       return parts.join(' • ');
     }
     
-    // Если нет фильтров - акционные товары по умолчанию
     return 'Все товары';
   }, [filters]);
 
@@ -120,7 +121,7 @@ export default function ProductsPage({ initialFilters = {} }) {
       categoryName: '',
       petTypeId: '',
       petTypeName: '',
-      filterType: null
+      filterType: ''
     });
   };
 
@@ -140,6 +141,8 @@ export default function ProductsPage({ initialFilters = {} }) {
             title={generateTitle}
             pageSize={8}
             filters={filters}
+            // Не нужно передавать onProductClick, так как ProductGrid
+            // сам управляет модальным окном
           />
         </main>
       </div>

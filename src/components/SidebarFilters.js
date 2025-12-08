@@ -77,6 +77,7 @@ export default function SidebarFilters({
     try {
       setLoadingPetTypes(true);
       const data = await petTypeService.getAll();
+      
       setPetTypes(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading pet types:', error);

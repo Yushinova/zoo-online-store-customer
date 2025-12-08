@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import ProductCard from './ProductCard';
+import ProductModal from '@/components/ProductModal';
 import { ProductQueryParameters } from '@/models/product';
 import { productService } from '@/api/productService';
 import styles from './ProductGrid.module.css';
@@ -22,7 +23,11 @@ export default function ProductGrid({
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // Загрузка товаров (первая загрузка или сброс)
+  // Для модального окна
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Загрузка товаров
   const loadProducts = useCallback(async (page = 1, reset = false) => {
     try {
       if (reset) {
@@ -79,14 +84,12 @@ export default function ProductGrid({
         params.isActive = filters.isActive;
       }
       
-      // Проверяем, не передали ли сортировку в filters
       if (filters.sortBy) {
         applySorting(params, filters.sortBy);
       }
       
       console.log('Loading products with params:', params);
       
-      // Получаем массив товаров с пагинацией от сервера
       const productsData = await productService.getAllWithFilterAndPagination(params);
       
       if (Array.isArray(productsData)) {
@@ -96,20 +99,17 @@ export default function ProductGrid({
           setProducts(prev => [...prev, ...productsData]);
         }
         
-        // Проверяем, есть ли еще товары для загрузки
         if (productsData.length === 0 || productsData.length < pageSize) {
           setHasMore(false);
         } else {
           setHasMore(true);
         }
         
-        // Обновляем текущую страницу
         if (productsData.length > 0) {
           setCurrentPage(page);
         }
         
       } else {
-        // Если сервер возвращает объект с мета-данными
         if (productsData && Array.isArray(productsData.items)) {
           if (page === 1) {
             setProducts(productsData.items);
@@ -117,7 +117,6 @@ export default function ProductGrid({
             setProducts(prev => [...prev, ...productsData.items]);
           }
           
-          // Проверяем по мета-данным или по количеству
           if (productsData.items.length === 0 || productsData.items.length < pageSize) {
             setHasMore(false);
           } else {
@@ -145,16 +144,48 @@ export default function ProductGrid({
     }
   }, [pageSize, filters]);
 
-  // ПРИ ИЗМЕНЕНИИ ФИЛЬТРОВ СБРАСЫВАЕМ НА ПЕРВУЮ СТРАНИЦУ
+  // При изменении фильтров сбрасываем на первую страницу
   useEffect(() => {
     setCurrentPage(1);
     loadProducts(1, true);
   }, [filters]);
 
-  // ОТДЕЛЬНЫЙ ЭФФЕКТ ДЛЯ ПЕРВОЙ ЗАГРУЗКИ
+  // Первая загрузка
   useEffect(() => {
     loadProducts(1, true);
   }, []);
+
+  // Обработчик клика по товару - открытие модального окна
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+    
+    // Блокируем скролл фона
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Обработчик закрытия модального окна
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    
+    // Возвращаем скролл
+    document.body.style.overflow = 'unset';
+  };
+
+  // Обработчик добавления в корзину (передаем в ProductCard)
+  const handleAddToCart = async (product) => {
+    console.log('Add to cart from grid:', product);
+    // Реализация добавления в корзину
+    // Можно добавить уведомление или обновление счетчика корзины
+  };
+
+  // Коллбэк при обновлении корзины из ProductCard
+  const handleCartUpdate = (cartData) => {
+    console.log('Cart updated:', cartData);
+    // Можно обновить счетчик корзины в header
+    // Или показать уведомление
+  };
 
   // Функция применения сортировки
   const applySorting = (params, sortOption) => {
@@ -190,20 +221,9 @@ export default function ProductGrid({
     }
   };
 
-  // Обработчик клика по товару
-  const handleProductClick = (product) => {
-    console.log('Product clicked:', product);
-  };
-
-  // Обработчик добавления в корзину
-  const handleAddToCart = async (product) => {
-    console.log('Add to cart:', product);
-    // Реализация добавления в корзину
-  };
-
   return (
     <div className={styles.container}>
-      {/* Добавьте эту строку для отображения заголовка */}
+      {/* Заголовок */}
       {title && <h2 className={styles.title}>{title}</h2>}
 
       {/* Состояние загрузки */}
@@ -248,8 +268,8 @@ export default function ProductGrid({
               <ProductCard
                 key={product.id}
                 product={product}
-                onClick={handleProductClick}
-                onAddToCart={handleAddToCart}
+                onClick={handleProductClick} // Передаем весь объект товара
+                onCartUpdate={handleCartUpdate} // Коллбэк для обновления корзины
                 size="medium"
               />
             ))}
@@ -282,6 +302,14 @@ export default function ProductGrid({
             </div>
           )}
         </>
+      )}
+
+      {/* Модальное окно с товаром */}
+      {isModalOpen && selectedProduct && (
+        <ProductModal
+          productId={selectedProduct.id}
+          onClose={handleCloseModal}
+        />
       )}
     </div>
   );

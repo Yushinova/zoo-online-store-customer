@@ -1,10 +1,11 @@
 'use client';
-
+import { API_CONFIG } from '@/config/api';
 import React, { useState, useEffect, useRef } from 'react';
 import { petTypeService } from '@/api/petTypeService';
 import styles from './NavigationBar.module.css';
 
 const NavigationBar = ({ onFilterChange }) => {
+  const URL_IMAGE = `${API_CONFIG.YC_URL}/${API_CONFIG.YC_BACKET}`;
   const [navItems, setNavItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,23 +17,6 @@ const NavigationBar = ({ onFilterChange }) => {
     loadPetTypes();
   }, []);
 
-  // При монтировании применяем фильтр акционных товаров ТОЛЬКО при первой загрузке
-  useEffect(() => {
-    if (isInitialMount.current) {
-      const filters = {
-        petTypeId: null,
-        petTypeName: '',
-        categoryId: null,
-        categoryName: '',
-        isPromotion: true,
-        filterType: 'sales'
-      };
-      setActiveFilter({ type: 'sales', id: 'sales', name: 'Акции' });
-      onFilterChange(filters);
-      isInitialMount.current = false;
-    }
-  }, [onFilterChange]);
-
   const loadPetTypes = async () => {
     try {
       setLoading(true);
@@ -40,16 +24,11 @@ const NavigationBar = ({ onFilterChange }) => {
       
       const petTypes = await petTypeService.getAllWithCategoties();
       console.log('Получены типы животных:', petTypes);
-     
-      const sorted = [...petTypes].sort((a, b) => {
-        if (a.id < b.id) return -1;
-        if (a.id > b.id) return 1;
-        return 0;
-      });
 
-      const navigationItems = sorted.map(petType => ({
+      const navigationItems = petTypes.map(petType => ({
         id: petType.id,
         name: petType.name,
+        imageName: petType.imageName,
         categories: petType.categories || []
       }));
       
@@ -90,10 +69,10 @@ const NavigationBar = ({ onFilterChange }) => {
       categoryId: null,
       categoryName: '',
       isPromotion: null,
-      filterType: 'petType'
+      filterType: ''
     };
     
-    setActiveFilter({ type: 'petType', id: petTypeId, name: petTypeName });
+    setActiveFilter({ type: '', id: petTypeId, name: petTypeName });
     onFilterChange(filters);
   };
 
@@ -122,7 +101,7 @@ const NavigationBar = ({ onFilterChange }) => {
       categoryId: categoryId,
       categoryName: categoryName,
       isPromotion: null,
-      filterType: 'category'
+      filterType: ''
     };
     
     setActiveFilter({ 
@@ -185,6 +164,18 @@ const NavigationBar = ({ onFilterChange }) => {
                 }
               >
                 <span className={styles.navContent}>
+                  {console.log(`Image URL для ${item.name}:`, `${URL_IMAGE}/${item.imageName}`)}
+                   {item.imageName && (
+                    <img 
+                      src={`${URL_IMAGE}/${item.imageName}`} 
+                      alt={item.name}
+                      className={styles.petTypeImage}
+                      onError={(e) => {
+                        // Обработка ошибки загрузки изображения
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  )}
                   <span className={styles.navText}>
                     {item.name}
                     {item.isSpecial && <span className={styles.saleBadge}>🔥</span>}
