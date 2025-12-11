@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useUser } from '@/app/providers/UserProvider';
 import { getCartItemsCount } from '@/utils/cart';
 import styles from './Header.module.css';
 
-const Header = ({ userName = null }) => {
+const Header = () => {
+  const { user, loading } = useUser();
   const [cartCount, setCartCount] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -37,6 +39,9 @@ const Header = ({ userName = null }) => {
       setCartCount(getCartItemsCount());
     }
   });
+
+  // Берем имя пользователя из контекста
+  const userName = user?.name;
 
   return (
     <header className={styles.header}>
@@ -111,6 +116,11 @@ const Header = ({ userName = null }) => {
             {userName && (
               <span className={styles.userName}>
                 {userName}
+              </span>
+            )}
+            {!userName && !loading && (
+              <span className={styles.loginText}>
+                Войти
               </span>
             )}
           </Link>

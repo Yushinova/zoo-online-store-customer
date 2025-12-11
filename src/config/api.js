@@ -4,16 +4,15 @@ export const API_CONFIG = {
   YC_BACKET: process.env.NEXT_PUBLIC_YC_BUCKET_NAME,
   
  USER: {
-    LOGIN: '/api/admin/login',
-    REGISTER: '/api/admin/register',
-    AUTH: '/api/auth/admin',
-    GET: `/api/admin`
+    LOGIN: '/api/user/login',
+    REGISTER: '/api/user/register',
+    AUTH: '/api/auth/user',
+    GET: `/api/user`
   },
   
   ORDERS: {
-    BY_ID: (id) => `/api/orders/${id}`,
-    UPDATE: (id) => `/api/order/admin/${id}`,
-    GET_SORTED: (page, pageSize) => `/api/order/admin?page=${page}&pageSize=${pageSize}`
+    BY_ID: (id) => `/api/order/user${id}`,
+    CREATE: `/api/order/user`,
   },
   
   PRODUCTS: {

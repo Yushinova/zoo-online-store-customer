@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import ProductsPage from '@/components/ProductsPage';
 import styles from './page.module.css';
 import { useState } from 'react';
-
+import { UserProvider } from '@/app/providers/UserProvider';
 export default function Home() {
   const [filtersFromNav, setFiltersFromNav] = useState({});
 
@@ -15,7 +15,10 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <Header />
+      <UserProvider>
+          <Header />
+      </UserProvider>
+      
       <NavigationBar onFilterChange={handleNavFilterChange} />
       
       <main className={styles.main}>

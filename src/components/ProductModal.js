@@ -2,14 +2,17 @@
 import React, { useState, useEffect } from 'react';
 import { productService } from '@/api/productService';
 import { categoryService } from '@/api/categoryService';
+import { feedbackService } from '@/api/feedbackService';
 import ImageProductSlider from '@/components/ImageProductSlider';
+import ReviewsModal from './ReviewsModal';
+import AddReviewModal from './AddReviewModal';
 import { 
   addToCart, 
   getCartItemQuantity 
 } from '@/utils/cart';
 import styles from './ProductModal.module.css';
 
-const ProductModal = ({ productId, onClose }) => {
+const ProductModal = ({ productId, onClose, onProductUpdated }) => {
   const [product, setProduct] = useState(null);
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,6 +20,11 @@ const ProductModal = ({ productId, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [cartQuantity, setCartQuantity] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0); // Состояние для общего количества отзывов
+  const [loadingReviews, setLoadingReviews] = useState(false); // Состояние для загрузки отзывов
+  const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
+  const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (productId) {
@@ -29,6 +37,7 @@ const ProductModal = ({ productId, onClose }) => {
   useEffect(() => {
     if (product) {
       setCartQuantity(getCartItemQuantity(product.id));
+      fetchTotalReviews(product.id);
     }
   }, [product]);
 
@@ -53,6 +62,38 @@ const ProductModal = ({ productId, onClose }) => {
       setError('Не удалось загрузить информацию о товаре');
     } finally {
       setLoading(false);
+    }
+  };
+  //рефркш
+ // Убедитесь, что refreshProductData возвращает обновленный товар:
+const refreshProductData = async () => {
+  if (!productId) return null;
+  
+  try {
+    setRefreshing(true);
+    const updatedProduct = await productService.getByIdWithAllInfo(productId);
+    setProduct(updatedProduct);
+    return updatedProduct; // ← ВАЖНО: возвращаем товар
+  } catch (error) {
+    console.error('Ошибка обновления товара:', error);
+    return null;
+  } finally {
+    setRefreshing(false);
+  }
+};
+// Функция для загрузки общего количества отзывов
+  const fetchTotalReviews = async (productId) => {
+    try {
+      setLoadingReviews(true);
+      // Используем существующий метод getByProductId для получения всех отзывов
+      const reviews = await feedbackService.getByProductId(productId);
+      // Устанавливаем количество отзывов
+      setTotalReviews(reviews.length);
+    } catch (error) {
+      console.error('Ошибка загрузки отзывов:', error);
+      setTotalReviews(0); // При ошибке показываем 0
+    } finally {
+      setLoadingReviews(false);
     }
   };
 
@@ -102,6 +143,26 @@ const ProductModal = ({ productId, onClose }) => {
       setAddingToCart(false);
     }
   };
+ 
+  //новое///
+  const handleReviewAdded = () => {
+  console.log('🎯 Отзыв добавлен, обновляем данные товара...');
+  
+  // Обновляем данные товара
+  refreshProductData().then(updatedProduct => {
+    if (updatedProduct) {
+      console.log('✅ Товар обновлен, новый рейтинг:', updatedProduct.rating);
+      
+      // ВАЖНО: Передаем обновленный товар родителю
+      if (onProductUpdated && typeof onProductUpdated === 'function') {
+        console.log('📤 Передаем обновленный товар в ProductGrid');
+        onProductUpdated(updatedProduct);
+      }
+    }
+    
+    showNotification('Отзыв успешно добавлен!', 'success');
+  });
+};
 
   const handleBuyNow = () => {
     if (!product || !product.isActive) {
@@ -131,25 +192,11 @@ const ProductModal = ({ productId, onClose }) => {
   };
 
   const showNotification = (message, type = 'success') => {
-    if (typeof window === 'undefined') return;
-    
-    const notification = document.createElement('div');
-    notification.className = styles.notification;
-    notification.textContent = message;
-    
-    Object.assign(notification.style, {
-      position: 'fixed',
-      top: '20px',
-      right: '20px',
-      padding: '12px 24px',
-      borderRadius: '8px',
-      color: 'white',
-      background: type === 'success' ? '#28a745' : '#dc3545',
-      fontWeight: '500',
-      zIndex: '9999',
-      animation: 'slideIn 0.3s ease',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-    });
+  if (typeof window === 'undefined') return;
+  
+  const notification = document.createElement('div');
+  notification.className = `${styles.notification} ${styles[`notification${type.charAt(0).toUpperCase() + type.slice(1)}`]}`;
+  notification.textContent = message;
     
     document.body.appendChild(notification);
     
@@ -180,12 +227,20 @@ const ProductModal = ({ productId, onClose }) => {
     return stars;
   };
 
-  const handleReadReviews = () => {
-    console.log('Переход ко всем отзывам товара:', productId);
-  };
+ const handleReadReviews = () => {
+  setIsReviewsModalOpen(true);
+};
 
   const handleWriteReview = () => {
-    console.log('Написать отзыв для товара:', productId);
+     const currentUserId = 1; // Нужно реализовать получение userId
+  if (!currentUserId) {
+    // Можно перенаправить на страницу авторизации
+    // или показать уведомление
+    showNotification('Для написания отзыва необходимо авторизоваться', 'error');
+    return;
+  }
+
+  setIsAddReviewModalOpen(true);
   };
 
   if (!isVisible || !productId) return null;
@@ -265,7 +320,13 @@ const ProductModal = ({ productId, onClose }) => {
                   <div className={styles.reviewsStats}>
                     <div className={styles.reviewStat}>
                       <span className={styles.statLabel}>Всего отзывов:</span>
-                      <span className={styles.statValue}>0</span>
+                      <span className={styles.statValue}>
+                        {loadingReviews ? (
+                          <span className={styles.loadingText}>...</span>
+                        ) : (
+                          totalReviews
+                        )}
+                      </span>
                     </div>
                     <div className={styles.reviewStat}>
                       <span className={styles.statLabel}>Средняя оценка:</span>
@@ -304,7 +365,7 @@ const ProductModal = ({ productId, onClose }) => {
                         : 'Нет в наличии'}
                     </span>
                   </div>
-                  {product.quantity > 0 && product.quantity <= 5 && (
+                  {product.quantity > 0 && product.quantity <= 10 && (
                     <div className={styles.lowStockWarning}>
                       <svg className={styles.warningIcon} viewBox="0 0 24 24">
                         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
@@ -411,6 +472,22 @@ const ProductModal = ({ productId, onClose }) => {
           </div>
         ) : null}
       </div>
+      {isReviewsModalOpen && product && (
+      <ReviewsModal
+        productId={product.id}
+        productName={product.name}
+        onClose={() => setIsReviewsModalOpen(false)}
+      />
+      )}
+
+      {isAddReviewModalOpen && product && (
+      <AddReviewModal
+        productId={product.id}
+        productName={product.name}
+        onClose={() => setIsAddReviewModalOpen(false)}
+        onReviewAdded={handleReviewAdded}
+      />
+    )}
     </div>
   );
 };

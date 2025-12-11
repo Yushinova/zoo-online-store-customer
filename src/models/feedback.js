@@ -15,3 +15,12 @@ export class FeedbackResponse {
     this.productId = 0;
   }
 }
+
+export class FeedbackRequest {
+  constructor() {
+    this.content = '';
+    this.rating = 0;
+    this.userId = 0;
+    this.productId = 0;
+  }
+}

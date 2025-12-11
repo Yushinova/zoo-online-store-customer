@@ -8,8 +8,6 @@ import styles from './ProductGrid.module.css';
 
 export default function ProductGrid({ 
   filters = {},
-  onEditProduct,
-  showEditButtons = false,
   showLoadMore = true,
   pageSize = 8,
   title = "Товары"
@@ -18,7 +16,8 @@ export default function ProductGrid({
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
-  
+  //новое/////
+
   // Для пагинации
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -166,11 +165,9 @@ export default function ProductGrid({
 
   // Обработчик закрытия модального окна
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-    
-    // Возвращаем скролл
-    document.body.style.overflow = 'unset';
+     setIsModalOpen(false);
+  setSelectedProduct(null);
+  document.body.style.overflow = 'unset';
   };
 
   // Обработчик добавления в корзину (передаем в ProductCard)

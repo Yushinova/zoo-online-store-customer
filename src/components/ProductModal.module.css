@@ -671,3 +671,24 @@
   height: 20px;
   fill: currentColor;
 }
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.notificationSuccess {
+  background: #28a745;
+}
+
+.notificationError {
+  background: #dc3545;
+}
