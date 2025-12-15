@@ -2,7 +2,7 @@ export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL,
   YC_URL: process.env.NEXT_PUBLIC_YC_PUBLIC_URL,
   YC_BACKET: process.env.NEXT_PUBLIC_YC_BUCKET_NAME,
-  
+
  USER: {
     LOGIN: '/api/user/login',
     REGISTER: '/api/user/register',
@@ -11,7 +11,7 @@ export const API_CONFIG = {
   },
   
   ORDERS: {
-    BY_ID: (id) => `/api/order/user${id}`,
+    BY_ID: (id) => `/api/order/user/${id}`,
     CREATE: `/api/order/user`,
   },
   
@@ -40,5 +40,11 @@ export const API_CONFIG = {
   
   PET_TYPES: {
     BASE: '/api/pettype',
+  },
+
+  ADDRESSES: {
+    BASE: '/api/address',
+    BY_ID: (id) => `/api/address/${id}`,
+    BY_ADDRESS_ID: (id) => `/api/address/${id}`
   }
 };

@@ -1,0 +1,359 @@
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.backButton {
+  background: none;
+  border: 1px solid #ddd;
+  color: #666;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  background-color: #f8f9fa;
+}
+
+/* Информация о пользователе */
+.userInfo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.infoCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.infoCard h4 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.infoCard p {
+  margin: 8px 0;
+  color: #555;
+}
+
+.discountBadge {
+  display: inline-block;
+  background-color: #d4edda;
+  color: #155724;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  margin-top: 12px !important;
+}
+
+/* Состав заказа */
+.orderSummary {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 30px;
+}
+
+.orderSummary h4 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.orderItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.itemImagePlaceholder {
+  width: 40px;
+  height: 40px;
+  background-color: #0070f3;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.itemDetails {
+  flex: 1;
+}
+
+.itemDetails h5 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.itemMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Итоговая сумма */
+.totalSummary {
+  border-top: 1px solid #e9ecef;
+  padding-top: 20px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.totalRow:last-child {
+  border-bottom: none;
+}
+
+.discount {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.finalPrice {
+  font-size: 18px;
+  font-weight: 700;
+  color: #28a745;
+}
+
+/* Доставка */
+.deliverySection {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 30px;
+}
+
+.deliverySection h4 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.savedAddresses {
+  margin-bottom: 24px;
+}
+
+.savedAddresses h5 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.addressesList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.addressCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.addressCard:hover {
+  background-color: #e9ecef;
+}
+
+.addressCard.selected {
+  border-color: #0070f3;
+  background-color: #e7f3ff;
+}
+
+.radio input {
+  margin: 0;
+}
+
+.addressText {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Новый адрес */
+.newAddressSection {
+  margin-top: 20px;
+}
+
+.addressOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  border: 2px solid transparent;
+}
+
+.addressOption:hover {
+  background-color: #e9ecef;
+}
+
+.addressOption.selected {
+  border-color: #0070f3;
+  background-color: #e7f3ff;
+}
+
+.addressInputWrapper {
+  margin-top: 16px;
+}
+
+.addressInput {
+  width: 100%;
+}
+
+.selectedAddressPreview {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.selectedAddressPreview p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Загрузка */
+.loading {
+  text-align: center;
+  padding: 40px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #0070f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.noAddresses {
+  text-align: center;
+  padding: 20px;
+}
+
+.noAddresses p {
+  margin-bottom: 16px;
+  color: #666;
+}
+
+/* Кнопки */
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.cancelButton {
+  background: white;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #f8f9fa;
+}
+
+.confirmButton {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.confirmButton:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.confirmButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.finalPriceLabel {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.finalPrice {
+  font-size: 24px;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.confirmButton {
+  min-width: 250px; /* Чтобы кнопка не была слишком узкой */
+}

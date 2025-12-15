@@ -295,3 +295,103 @@
     display: none;
   }
 }
+
+/*новое*/
+.checkoutButton {
+  width: 100%;
+  padding: 16px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+}
+
+.checkoutButton:hover {
+  background-color: #0051b3;
+}
+
+.checkoutButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.checkoutButtonDisabled {
+  background-color: #ff9900 !important;
+}
+
+.checkoutButtonDisabled:hover {
+  background-color: #e68a00 !important;
+}
+
+.authWarning {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.authWarning p {
+  margin: 0 0 10px 0;
+  color: #856404;
+  font-size: 14px;
+}
+
+.loginLink {
+  color: #0070f3;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.loginLink:hover {
+  text-decoration: underline;
+}
+
+.mobileCheckout {
+  width: 100%;
+  padding: 12px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mobileCheckout:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.mobileCheckoutDisabled {
+  background-color: #ff9900 !important;
+}
+
+.mobileAuthWarning {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fff3cd;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.mobileAuthWarning p {
+  margin: 0 0 5px 0;
+  color: #856404;
+  font-size: 12px;
+}
+
+.mobileLoginLink {
+  color: #0070f3;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 12px;
+}

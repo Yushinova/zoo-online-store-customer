@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   getCart, 
   updateCartItemQuantity, 
@@ -11,15 +12,19 @@ import {
   getCartTotal 
 } from '@/utils/cart';
 import { productService } from '@/api/productService';
+import { useUser } from '@/app/providers/UserProvider';
 import CartItem from '@/components/CartItem';
 import styles from './page.module.css';
 
 export default function CartPage() {
+  const router = useRouter();
+  const { user, loading: userLoading } = useUser();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // Загружаем данные корзины
   const loadCartData = useCallback(async () => {
@@ -40,13 +45,11 @@ export default function CartPage() {
       const itemsWithDetails = await Promise.all(
         cart.map(async (item) => {
           try {
-            // Получаем полную информацию о товаре с сервера
             const product = await productService.getByIdWithAllInfo(item.productId);
             return {
               ...item,
               product: {
                 ...product,
-                // Убедимся, что все необходимые поля есть
                 id: product.id || item.productId,
                 name: product.name || `Товар ${item.productId}`,
                 description: product.description || '',
@@ -61,7 +64,6 @@ export default function CartPage() {
             };
           } catch (err) {
             console.error(`Error loading product ${item.productId}:`, err);
-            // Если не удалось загрузить товар, создаем базовый объект
             return {
               ...item,
               product: {
@@ -95,7 +97,6 @@ export default function CartPage() {
   useEffect(() => {
     loadCartData();
     
-    // Слушаем обновления корзины
     window.addEventListener('cartUpdated', loadCartData);
     
     return () => {
@@ -111,12 +112,64 @@ export default function CartPage() {
     setTotalAmount(total);
   };
 
+  // Обработчик оформления заказа
+  const handleCheckout = async () => {
+    if (userLoading) return;
+    
+    if (!user) {
+      // Пользователь не авторизован - перенаправляем на страницу входа
+      // Можно сохранить текущий URL для возврата после авторизации
+      const returnUrl = encodeURIComponent('/cart');
+      router.push(`/auth`);
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert('Корзина пуста');
+      return;
+    }
+
+    setCheckoutLoading(true);
+    try {
+      // Подготавливаем данные для передачи
+      const checkoutData = {
+        items: cartItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          product: {
+            id: item.product.id,
+            name: item.product.name,
+            price: item.product.price,
+            productImages: item.product.productImages
+          }
+        })),
+        totalAmount,
+        totalItems,
+        timestamp: new Date().toISOString()
+      };
+
+      // Сохраняем данные в sessionStorage для передачи на следующую страницу
+      sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+
+      // Альтернативно, можно использовать параметры URL для небольших данных
+      // const queryString = `?items=${encodeURIComponent(JSON.stringify(checkoutData.items))}&total=${totalAmount}`;
+      
+      // Переходим на страницу оформления заказа
+      router.push('/personal');
+
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      alert('Произошла ошибка при оформлении заказа');
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
   // Обработчик изменения количества
   const handleQuantityChange = async (productId, newQuantity) => {
     try {
       updateCartItemQuantity(productId, newQuantity);
       
-      // Обновляем локальное состояние
       setCartItems(prevItems => 
         prevItems.map(item => 
           item.productId === productId 
@@ -125,7 +178,6 @@ export default function CartPage() {
         )
       );
       
-      // Пересчитываем итоги
       setCartItems(prevItems => {
         const updatedItems = prevItems.map(item => 
           item.productId === productId 
@@ -149,7 +201,6 @@ export default function CartPage() {
     if (confirm('Удалить товар из корзины?')) {
       removeFromCart(productId);
       
-      // Обновляем локальное состояние
       setCartItems(prevItems => {
         const updatedItems = prevItems.filter(item => item.productId !== productId);
         calculateTotal(updatedItems);
@@ -182,7 +233,14 @@ export default function CartPage() {
     }).format(price);
   };
 
-  if (loading) {
+  // Отображаем текст кнопки в зависимости от состояния
+  const getCheckoutButtonText = () => {
+    if (checkoutLoading) return 'Загрузка...';
+    if (!user) return 'Войти для оформления';
+    return 'Перейти к оформлению';
+  };
+
+  if (loading || userLoading) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
@@ -265,9 +323,22 @@ export default function CartPage() {
                   <span className={styles.totalPrice}>{formatPrice(totalAmount)}</span>
                 </div>
 
-                <button className={styles.checkoutButton}>
-                  Перейти к оформлению
+                <button 
+                  className={`${styles.checkoutButton} ${!user ? styles.checkoutButtonDisabled : ''}`}
+                  onClick={handleCheckout}
+                  disabled={cartItems.length === 0 || checkoutLoading || !user}
+                >
+                  {getCheckoutButtonText()}
                 </button>
+
+                {!user && (
+                  <div className={styles.authWarning}>
+                    <p>Для оформления заказа необходимо войти в систему</p>
+                    <Link href="/auth" className={styles.loginLink}>
+                      Войти в аккаунт
+                    </Link>
+                  </div>
+                )}
 
                 <div className={styles.promoSection}>
                   <input
@@ -289,10 +360,22 @@ export default function CartPage() {
           <div className={styles.mobileSummary}>
             <div className={styles.mobileTotal}>
               <span>Итого: {formatPrice(totalAmount)}</span>
-              <button className={styles.mobileCheckout}>
-                Оформить заказ
+              <button 
+                className={`${styles.mobileCheckout} ${!user ? styles.mobileCheckoutDisabled : ''}`}
+                onClick={handleCheckout}
+                disabled={cartItems.length === 0 || checkoutLoading || !user}
+              >
+                {getCheckoutButtonText()}
               </button>
             </div>
+            {!user && (
+              <div className={styles.mobileAuthWarning}>
+                <p>Для оформления заказа необходимо войти</p>
+                <Link href="/login" className={styles.mobileLoginLink}>
+                  Войти
+                </Link>
+              </div>
+            )}
           </div>
         </>
       )}

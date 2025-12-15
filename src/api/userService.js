@@ -100,7 +100,7 @@ export class UserService {
       const userResponseData = await response.json();
       const userResponse = new UserResponse();
       Object.assign(userResponse, userResponseData);
-      
+     
       this.setCurrentUser(userResponse); // ⭐ Только в памяти
       
       return userResponse;

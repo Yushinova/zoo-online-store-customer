@@ -1,14 +1,14 @@
 import { API_CONFIG } from '@/config/api';
-export class OrderService {
+export class AddressService {
   constructor() {
     this.baseUrl = API_CONFIG.BASE_URL;
   }
 
   async getByUserId(userId) {
     try {
-      console.log(`Загрузка заказов для юзера ID: ${userId}`);
-      console.log(`🔗 URL: ${this.baseUrl}${API_CONFIG.ORDERS.BY_ID(userId)}`);
-      const response = await fetch(`${this.baseUrl}${API_CONFIG.ORDERS.BY_ID(userId)}`, {
+      console.log(`Загрузка адресов для юзера ID: ${userId}`);
+      
+      const response = await fetch(`${this.baseUrl}${API_CONFIG.ADDRESSES.BY_ID(userId)}`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -18,15 +18,15 @@ export class OrderService {
 
       console.log(`Статус ответа: ${response.status}`);
       
-      // Если статус 204 - нет контента (заказов нет)
+      // Если статус 204 - нет контента (адресов нет)
       if (response.status === 204) {
-        console.log(`Нет заказов для юзера ${userId}`);
+        console.log(`Нет адресов для юзера ${userId}`);
         return [];
       }
       
       // Если статус 404 - юзер не найден или нет заказов
       if (response.status === 404) {
-        console.log(`юзер ${userId} не найден или нет заказов`);
+        console.log(`юзер ${userId} не найден или нет адресов`);
         return [];
       }
       
@@ -46,21 +46,21 @@ export class OrderService {
         } catch {
           // Если не удалось прочитать текст ошибки
         }
-        console.error(`Ошибка загрузки отзывов: ${errorMessage}`);
+        console.error(`Ошибка загрузки адресов: ${errorMessage}`);
         // Возвращаем пустой массив вместо выброса ошибки
         return [];
       }
 
-      const orders = await response.json();
-      console.log(`заказы успешно загружены для юзера ${userId}:`, orders);
+      const addresses = await response.json();
+      console.log(`адреса успешно загружены для юзера ${userId}:`, addresses);
       
       // Проверяем, что пришел массив
-      if (!Array.isArray(orders)) {
-        console.warn('Ожидался массив заказов, но получено:', typeof orders);
+      if (!Array.isArray(addresses)) {
+        console.warn('Ожидался массив заказов, но получено:', typeof addresses);
         return [];
       }
       
-      return orders;
+      return addresses;
 
     } catch (error) {
       console.error(`Ошибка загрузки заказов для юзера ${userId}:`, error);
@@ -69,16 +69,16 @@ export class OrderService {
     }
   }
   
-  // Метод для создания заказа
-  async create(orderData) {
+  // Метод для создания адреса
+  async create(addressData) {
     try {
-      const response = await fetch(`${this.baseUrl}${API_CONFIG.ORDERS.CREATE}`, {
+      const response = await fetch(`${this.baseUrl}${API_CONFIG.ADDRESSES.BASE}`, {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(addressData)
       });
 
       if (!response.ok) {
@@ -99,15 +99,45 @@ export class OrderService {
         throw new Error(errorMessage);
       }
 
-      const createdOrder = await response.json();
-      console.log('Отзыв успешно создан:', createdOrder);
-      
-      return createdOrder;
+      console.log('Адрес добавлен успешно');
+      return { success: true, message: 'Адрес добавлен успешно!' };
 
     } catch (error) {
-      console.error('Ошибка создания отзыва:', error);
+      console.error('Ошибка создания адреса:', error);
+      throw error;
+    }
+  }
+
+  async deleteById(id) {
+    try {
+      console.log('Deleting address with ID:', id);
+
+      const response = await fetch(`${this.baseUrl}${API_CONFIG.ADDRESSES.BY_ADDRESS_ID(id)}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.Message || errorData.message || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      console.log('address deleted successfully');
+      return { success: true, message: 'address deleted successfully' };
+
+    } catch (error) {
+      console.error('Error deleting product:', error);
       throw error;
     }
   }
 }
-export const orderService = new OrderService();
+export const addressService = new AddressService();

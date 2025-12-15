@@ -38,7 +38,7 @@ export default function AddressInput({ onAddressSelect }) {
     const checkYmaps = () => {
       if (window.ymaps3?.suggest) {
         setYmapsReady(true);
-        console.log('✅ ymaps3.suggest доступна глобально');
+        console.log('ymaps3.suggest доступна глобально');
         return true;
       }
       return false;
@@ -50,7 +50,7 @@ export default function AddressInput({ onAddressSelect }) {
       if (checkYmaps()) {
         clearInterval(interval);
       }
-    }, 1000);
+    }, 500);
     
     return () => clearInterval(interval);
   }, []);
@@ -76,10 +76,10 @@ export default function AddressInput({ onAddressSelect }) {
       
       const results = await window.ymaps3.suggest({
         text: query,
-        results: 7,
+        results: 10,
       });
 
-      console.log(`✅ Получено подсказок: ${results.length}`);
+      //console.log(`Получено подсказок: ${results.length}`);
       
       if (results.length > 0) {
         setSuggestions(results);
@@ -89,7 +89,7 @@ export default function AddressInput({ onAddressSelect }) {
         setShowDropdown(false);
       }
     } catch (err) {
-      console.error('❌ Ошибка suggest:', err);
+      console.error('Ошибка suggest:', err);
       setError(`Ошибка загрузки подсказок: ${err.message}`);
       setSuggestions([]);
       setShowDropdown(false);
@@ -100,7 +100,7 @@ export default function AddressInput({ onAddressSelect }) {
 
   // Запускаем запрос при изменении debounced значения
   useEffect(() => {
-    if (ymapsReady && debouncedInput.length >= 2) {
+    if (ymapsReady && debouncedInput.length >= 1) {
       fetchSuggestions(debouncedInput);
     }
   }, [debouncedInput, ymapsReady, fetchSuggestions]);
@@ -120,7 +120,7 @@ export default function AddressInput({ onAddressSelect }) {
     const value = e.target.value;
     setInputValue(value);
     
-    if (value.length < 2) {
+    if (value.length < 1) {
       setSuggestions([]);
       setShowDropdown(false);
     }
@@ -129,7 +129,7 @@ export default function AddressInput({ onAddressSelect }) {
   // Обработчик фокуса
   const handleInputFocus = useCallback(() => {
     setIsFocused(true);
-    if (inputValue.length >= 2 && suggestions.length > 0) {
+    if (inputValue.length >= 1 && suggestions.length > 0) {
       setShowDropdown(true);
     }
   }, [inputValue.length, suggestions.length]);
@@ -283,14 +283,6 @@ export default function AddressInput({ onAddressSelect }) {
                   <div className={styles.suggestionSubtitle}>
                     {item.subtitle.text}
                   </div>
-                )}
-                {item.type && (
-                  <span className={`${styles.suggestionTag} ${styles[item.type] || ''}`}>
-                    {item.type === 'toponym' ? 'Топоним' : 
-                     item.type === 'street' ? 'Улица' : 
-                     item.type === 'house' ? 'Дом' : 
-                     item.type === 'locality' ? 'Город' : item.type}
-                  </span>
                 )}
               </div>
             ))}

@@ -16,7 +16,7 @@ export default function TestComponentPage() {
       return;
     }
 
-    console.log('🔄 Загружаем ymaps3 для теста...');
+   
     const script = document.createElement('script');
     script.src = `https://api-maps.yandex.ru/v3/?apikey=${process.env.NEXT_PUBLIC_YANDEX_API_KEY}&lang=ru_RU`;
     script.async = true;

@@ -1,0 +1,334 @@
+.container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.addButton {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addButton:hover {
+  background-color: #0051a8;
+}
+
+.addButton:active {
+  transform: translateY(1px);
+}
+
+/* Форма добавления */
+.addForm {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #e9ecef;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.formHeader h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.cancelButton {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.cancelButton:hover {
+  background-color: #e9ecef;
+}
+
+.addressInputWrapper {
+  margin-bottom: 16px;
+}
+
+.addressInput {
+  width: 100%;
+}
+
+.selectedAddressPreview {
+  background-color: white;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.previewTitle {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 4px 0;
+}
+
+.previewAddress {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  font-weight: 500;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.primaryButton {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: #0051a8;
+}
+
+.primaryButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background-color: white;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+  background-color: #f8f9fa;
+}
+
+/* Список адресов */
+.addressesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+}
+
+.emptyText {
+  color: #666;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.emptyAddButton {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.emptyAddButton:hover {
+  background-color: #0051a8;
+}
+
+/* Карточка адреса */
+.addressCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.addressCard:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.addressContent {
+  flex: 1;
+}
+
+.defaultBadge {
+  display: inline-block;
+  background-color: #d4edda;
+  color: #155724;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.addressText {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.addressActions {
+  display: flex;
+  gap: 8px;
+}
+
+.deleteButton {
+  background-color: #f8f9fa;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteButton:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Информационное сообщение */
+.infoMessage {
+  margin-top: 24px;
+  padding: 12px;
+  background-color: #e7f3ff;
+  border-radius: 8px;
+  border-left: 4px solid #0070f3;
+}
+
+.infoMessage p {
+  margin: 0;
+  font-size: 13px;
+  color: #333;
+}
+
+/* Загрузка */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #0070f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.inputMethodToggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 12px;
+}
+
+.toggleButton {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.toggleButton:hover {
+  background-color: #f8f9fa;
+}
+
+.activeToggle {
+  background-color: #0070f3;
+  color: white;
+  border-color: #0070f3;
+}
+
+/* Ручной ввод */
+.manualInputWrapper {
+  margin-bottom: 16px;
+}
+
+.manualTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+  margin-bottom: 8px;
+}
+
+.manualTextarea:focus {
+  outline: none;
+  border-color: #0070f3;
+  box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+}
+
+.manualHint {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}

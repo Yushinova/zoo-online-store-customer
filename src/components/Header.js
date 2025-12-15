@@ -105,7 +105,7 @@ const Header = () => {
       {/* Часть 4: Профиль и корзина - 25% */}
       <div className={styles.userSection}>
         <div className={styles.profileWrapper}>
-          <Link href={userName ? "/profile" : "/login"} className={styles.profileLink}>
+          <Link href={userName ? "/personal" : "/auth"} className={styles.profileLink}>
             <Image
               src="/profile.png"
               alt={userName ? "Профиль" : "Войти"}

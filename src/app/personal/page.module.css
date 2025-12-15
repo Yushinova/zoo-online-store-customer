@@ -1,0 +1,631 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Хедер пользователя */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #30d830 0%, #0b9b2a 100%);
+  padding: 25px 30px;
+  border-radius: 15px;
+  color: white;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  border: 3px solid white;
+}
+
+.userDetails {
+  flex: 1;
+}
+
+.userName {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: white;
+}
+
+.userEmail {
+  font-size: 15px;
+  opacity: 0.9;
+  margin: 0 0 5px 0;
+}
+
+.userPhone {
+  font-size: 15px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.userStats {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.statItem {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.statItem strong {
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.logoutButton {
+  padding: 10px 25px;
+  background-color: white;
+  color: #23c947;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logoutButton:hover {
+  transform: translateY(-2px);
+  background-color: #6d99eb;
+  color: #ffffff;
+}
+
+/* Навигационные вкладки */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.tab {
+  flex: 1;
+  padding: 15px 20px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tab:hover {
+  background-color: #b7ffb4;
+  color: #333;
+}
+
+.activeTab {
+  background: linear-gradient(135deg, #30d830 0%, #0b9b2a 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.badge {
+  background-color: #ff4757;
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Содержимое вкладок */
+.content {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.tabContent {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tabTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 25px 0;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* Карточка информации */
+.infoCard {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 15px;
+  border: 1px solid #e3f0e1;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: #555;
+  font-size: 15px;
+}
+
+.infoValue {
+  color: #333;
+  font-weight: 500;
+}
+
+.infoValueHighlight {
+  color: #1fe250;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.discountInfo {
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* Оформление заказа */
+.checkoutHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.backToCartButton {
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid #ddd;
+  color: #666;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.backToCartButton:hover {
+  border-color: #48db48;
+  color: #48db48;
+}
+
+.orderInfo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.discountBadge {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  color: #333;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Список товаров */
+.itemsList {
+  margin: 25px 0;
+}
+
+.orderItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.itemImagePlaceholder {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #30d830 0%, #0b9b2a 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.itemDetails {
+  flex: 1;
+}
+
+.itemDetails h5 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.itemMeta {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.itemMeta span {
+  background: #eef2ff;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* Итоговая сумма */
+.totalSummary {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 25px 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+}
+
+.totalRow:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.discount {
+  color: #ff4757;
+  font-weight: 600;
+}
+
+.finalPrice {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1fb645;
+}
+
+/* Адрес доставки */
+.addressSection {
+  margin-top: 20px;
+}
+
+.addressHint {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.addressInput {
+  margin-bottom: 20px;
+}
+
+.savedAddresses {
+  margin-top: 30px;
+}
+
+.savedAddresses h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.addressCard {
+  background: #f0f7ff;
+  border: 1px solid #9afaaf;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.addressText {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.useAddressButton {
+  background: #23d323;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.useAddressButton:hover {
+  background: #1ac03e;
+}
+
+.noAddresses {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.deliverySection {
+  margin: 25px 0;
+  padding: 20px;
+  background: #f0f7ff;
+  border-radius: 10px;
+  border: 1px solid #c3ffcd;
+}
+
+.deliverySection h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.deliveryAddressInput {
+  margin-bottom: 10px;
+}
+
+/* Кнопки действий */
+.actionButtons {
+  margin-top: 30px;
+}
+
+.confirmButton {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #30d830 0%, #0b9b2a 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirmButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.confirmButton:active {
+  transform: translateY(0);
+}
+
+.confirmButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Загрузка */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f0f0f0;
+  border-top: 4px solid #27c72f;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingText {
+  color: #666;
+  font-size: 16px;
+}
+
+/* Профиль */
+.profileInfo {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .userInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  
+  .userStats {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .logoutButton {
+    width: 100%;
+  }
+  
+  .tabs {
+    flex-direction: column;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+  
+  .orderInfo {
+    grid-template-columns: 1fr;
+  }
+  
+  .itemMeta {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .totalSummary {
+    padding: 15px;
+  }
+}
+
+/* Стили для секции адреса доставки */
+.addressSection {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.addressHint {
+  color: #666;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Стили для инструкций */
+.deliveryInstructions {
+  margin-top: 32px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #0070f3;
+}
+
+.deliveryInstructions h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.instructionsList {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.instructionsList li {
+  margin-bottom: 8px;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.instructionsList li:last-child {
+  margin-bottom: 0;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+  .addressSection {
+    padding: 0 16px;
+  }
+  
+  .deliveryInstructions {
+    padding: 16px;
+  }
+  
+  .instructionsList li {
+    font-size: 13px;
+  }
+}
+.headerActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.homeButton {
+  background: none;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.homeButton:hover {
+  background-color: #f8f9fa;
+  color: #26e245;
+}
+
+/* Если используете Link */
+.homeButton[href] {
+  text-decoration: none;
+}

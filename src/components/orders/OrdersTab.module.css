@@ -1,0 +1,421 @@
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+/* Фильтры */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.filterButton {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filterButton:hover {
+  background: #e9ecef;
+}
+
+.activeFilter {
+  background: #0070f3;
+  color: white;
+  border-color: #0070f3;
+}
+
+/* Список заказов */
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.orderCard {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+  background: #f8f9fa;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.orderHeader:hover {
+  background: #e9ecef;
+}
+
+.orderMainInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.orderNumberSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.orderNumberLabel {
+  color: #666;
+  font-size: 14px;
+}
+
+.orderNumber {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.orderStatusBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.orderDateSection,
+.orderAddressSection {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.dateLabel,
+.addressLabel {
+  color: #666;
+}
+
+.dateValue,
+.addressValue {
+  color: #333;
+}
+
+.orderStatusSection {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.orderTotal {
+  font-size: 18px;
+  font-weight: 600;
+  color: #28a745;
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.expandButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Детали заказа */
+.orderDetails {
+  padding: 20px;
+  border-top: 1px solid #e9ecef;
+  background: white;
+}
+
+.statusDescription {
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: #495057;
+}
+
+.detailsSection {
+  margin-bottom: 24px;
+}
+
+.detailsSection h5 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detailLabel {
+  font-size: 12px;
+  color: #666;
+}
+
+.detailValue {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Состав заказа */
+.orderItems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.itemInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.itemName {
+  font-weight: 500;
+  color: #333;
+}
+
+.itemQuantity {
+  color: #666;
+  font-size: 14px;
+}
+
+.itemPrice {
+  font-weight: 600;
+  color: #333;
+}
+
+.noItems {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Итоговая сумма */
+.orderSummary {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+  color: #666;
+}
+
+.summaryRowTotal {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0 0 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.totalAmount {
+  color: #28a745;
+  font-size: 20px;
+}
+
+/* Действия */
+.orderActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.actionButton {
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.actionButton:hover {
+  background: #0051a8;
+}
+
+/* Статусы */
+.statusPaid {
+  background: #d4edda;
+  color: #155724;
+}
+
+.statusProcessing {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.statusShipped {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.statusDelivered {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.statusDeleted {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.statusUnknown {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+/* Загрузка, ошибка, пусто */
+.loadingContainer,
+.errorContainer,
+.emptyContainer,
+.noResults {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0070f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorText {
+  color: #dc3545;
+  margin-bottom: 20px;
+}
+
+.retryButton {
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.emptyIcon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.emptyContainer h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.emptyContainer p {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.shopButton {
+  display: inline-block;
+  background: #0070f3;
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.shopButton:hover {
+  background: #0051a8;
+}
+
+.noResults {
+  color: #666;
+  font-style: italic;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .orderHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .orderStatusSection {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .filters {
+    overflow-x: auto;
+    padding-bottom: 12px;
+  }
+
+  .filterButton {
+    white-space: nowrap;
+  }
+}
