@@ -1,8 +1,8 @@
 'use client';
-import Header from '@/components/Header';
-import NavigationBar from '@/components/NavigationBar';
-import Footer from '@/components/Footer';
-import ProductsPage from '@/components/ProductsPage';
+import Header from '@/components/header/Header';
+import NavigationBar from '@/components/navigation/NavigationBar';
+import Footer from '@/components/footer/Footer';
+import ProductsPage from '@/components/product/ProductsPage';
 import styles from './page.module.css';
 import { useState } from 'react';
 import { UserProvider } from '@/app/providers/UserProvider';

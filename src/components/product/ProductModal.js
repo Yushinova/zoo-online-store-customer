@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { productService } from '@/api/productService';
 import { categoryService } from '@/api/categoryService';
 import { feedbackService } from '@/api/feedbackService';
-import ImageProductSlider from '@/components/ImageProductSlider';
-import ReviewsModal from './ReviewsModal';
-import AddReviewModal from './AddReviewModal';
+import ImageProductSlider from '@/components/product/ImageProductSlider';
+import ReviewsModal from '../review/ReviewsModal';
+import AddReviewModal from '../review/AddReviewModal';
 import { 
   addToCart, 
   getCartItemQuantity 

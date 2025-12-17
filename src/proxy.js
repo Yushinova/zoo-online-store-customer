@@ -7,25 +7,20 @@ export function proxy(request) {
   
   // === ПОЛНОСТЬЮ ПУБЛИЧНЫЕ СТРАНИЦЫ ===
   const publicPages = [
-    '/',                    // Главная
-    '/catalog',             // Каталог
-    '/product',             // Страница товара
-    '/about',               // О нас
-    '/contacts',            // Контакты
-    '/delivery',            // Доставка
-    '/payment',             // Оплата
-    '/cart',                // Корзина (просмотр)
-    '/auth',                // Авторизация
-    '/api/public',          // Публичные API
-    '/_next',               // Статика Next.js
-    '/public',              // Публичные файлы
-    '/favicon.ico',         // Фавикон
+    '/',
+    '/about',
+    '/contacts',
+    '/delivery',
+    '/payment',
+    '/cart',
+    '/auth',
+    '/_next',
+    '/public',
   ];
   
-  // Проверяем, является ли страница публичной
   const isPublicPage = publicPages.some(page => 
     pathname.startsWith(page) || 
-    pathname.match(/^\/product\/[a-zA-Z0-9-_]+$/) // Динамические страницы товаров
+    pathname.match(/^\/product\/[a-zA-Z0-9-_]+$/)
   );
   
   // === МЕТОДЫ ЗАПРОСА ===
@@ -33,12 +28,10 @@ export function proxy(request) {
   const isGET = method === 'GET';
   
   // === ПРАВИЛА ДЛЯ POST ЗАПРОСОВ ===
-  
-  // POST запросы, требующие авторизации
   const protectedPostEndpoints = [
-    '/api/order/create',    // Создание заказа
-    '/api/order/user',    // Оформление заказа
-    '/api/feedback'    // Добавление отзыва
+    '/api/order/create',
+    '/api/order/user',
+    '/api/feedback'
   ];
   
   const isProtectedPost = protectedPostEndpoints.some(endpoint => 
@@ -46,15 +39,13 @@ export function proxy(request) {
   );
   
   // === ПРАВИЛА ДЛЯ GET ЗАПРОСОВ ===
-  
-  // GET запросы, требующие авторизации
   const protectedGetPages = [
-    '/personal',            // Личный кабинет
-    '/personal/orders',     // Заказы
-    '/personal/profile',    // Профиль
-    '/personal/settings',   // Настройки
-    '/api/user/profile',    // API профиля
-    '/api/user/orders',     // API заказов
+    '/personal',
+    '/personal/orders',
+    '/personal/profile',
+    '/personal/settings',
+    '/api/user/profile',
+    '/api/user/orders',
   ];
   
   const isProtectedGet = protectedGetPages.some(page => 
@@ -63,9 +54,8 @@ export function proxy(request) {
   
   // === ЛОГИКА ПРОВЕРКИ ===
   
-  // 1. Проверка POST запросов (оформление заказа, отзывы)
+  // 1. Проверка POST запросов
   if (isPOST && isProtectedPost && !token) {
-    // Для API запросов возвращаем JSON ошибку
     if (pathname.startsWith('/api/')) {
       return NextResponse.json(
         { 
@@ -78,14 +68,13 @@ export function proxy(request) {
       );
     }
     
-    // Для обычных POST запросов редирект на авторизацию
     const authUrl = new URL('/auth', request.url);
     authUrl.searchParams.set('redirect', nextUrl.pathname);
     authUrl.searchParams.set('message', 'Для оформления заказа требуется авторизация');
     return NextResponse.redirect(authUrl);
   }
   
-  // 2. Проверка GET запросов (личный кабинет)
+  // 2. Проверка GET запросов
   if (isGET && isProtectedGet && !token) {
     const authUrl = new URL('/auth', request.url);
     authUrl.searchParams.set('redirect', pathname);
@@ -94,7 +83,6 @@ export function proxy(request) {
   
   // 3. Если пользователь авторизован и пытается зайти на страницу авторизации
   if (token && pathname.startsWith('/auth')) {
-    // Проверяем, есть ли параметр для редиректа
     const redirectParam = nextUrl.searchParams.get('redirect');
     const redirectUrl = redirectParam 
       ? decodeURIComponent(redirectParam)
@@ -104,16 +92,12 @@ export function proxy(request) {
   }
   
   // 4. Для всех остальных случаев пропускаем запрос
-  return NextResponse.next();
+  const response = NextResponse.next();
+  
+  // 5. Добавляем обработку 401 ошибок из бэкенда
+  // Если бэкенд возвращает 401, мы перехватим это в fetch-запросах на клиенте
+  // Но здесь можно добавить заголовок для клиента
+  response.headers.set('X-Auth-Required', 'false');
+  
+  return response;
 }
-
-// Конфигурация для matcher
-export const config = {
-  matcher: [
-    /*
-     * Обрабатываем все маршруты
-     * Статические файлы тоже обрабатываем, так как они могут быть защищены
-     */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
-  ],
-};

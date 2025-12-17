@@ -1,7 +1,10 @@
+'use client'
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './Footer.module.css';
+import CookieNotice from './CookieNotice';
+import TestNotice from './TestNotice';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -79,62 +82,9 @@ const Footer = () => {
           </Link>
         </div>
       </footer>
-
-      {/* Сообщение о куках (как в первом варианте) */}
-      <CookieNotice />
+      <CookieNotice/>
+      
     </>
-  );
-};
-
-// Компонент сообщения о куках (как в первом варианте)
-const CookieNotice = () => {
-  const [isVisible, setIsVisible] = React.useState(true);
-
-  const handleAccept = () => {
-    localStorage.setItem('cookiesAccepted', 'true');
-    setIsVisible(false);
-  };
-
-  const handleDecline = () => {
-    localStorage.setItem('cookiesAccepted', 'false');
-    setIsVisible(false);
-  };
-
-  React.useEffect(() => {
-    const cookiesAccepted = localStorage.getItem('cookiesAccepted');
-    if (cookiesAccepted) {
-      setIsVisible(false);
-    }
-  }, []);
-
-  if (!isVisible) return null;
-
-  return (
-    <div className={styles.cookieNotice}>
-      <div className={styles.cookieContent}>
-        <p className={styles.cookieText}>
-          Мы используем файлы cookie для улучшения работы сайта. 
-          Продолжая использовать сайт, вы соглашаетесь с использованием cookies.
-        </p>
-        <div className={styles.cookieButtons}>
-          <button 
-            onClick={handleAccept} 
-            className={styles.cookieAcceptButton}
-          >
-            Принять
-          </button>
-          <button 
-            onClick={handleDecline} 
-            className={styles.cookieDeclineButton}
-          >
-            Отклонить
-          </button>
-          <Link href="/privacy" className={styles.cookiePolicyLink}>
-            Политика конфиденциальности
-          </Link>
-        </div>
-      </div>
-    </div>
   );
 };
 

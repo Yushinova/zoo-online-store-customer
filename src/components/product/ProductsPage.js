@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import SidebarFilters from '@/components/SidebarFilters';
-import ProductGrid from '@/components/ProductGrid';
+import SidebarFilters from '@/components/sidebar/SidebarFilters';
+import ProductGrid from '@/components/product/ProductGrid';
 import styles from './ProductsPage.module.css';
 
 export default function ProductsPage({ initialFilters = {} }) {

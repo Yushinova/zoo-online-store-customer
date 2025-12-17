@@ -23,7 +23,7 @@ const NavigationBar = ({ onFilterChange }) => {
       setError(null);
       
       const petTypes = await petTypeService.getAllWithCategoties();
-      console.log('Получены типы животных:', petTypes);
+     // console.log('Получены типы животных:', petTypes);
 
       const navigationItems = petTypes.map(petType => ({
         id: petType.id,
@@ -45,7 +45,7 @@ const NavigationBar = ({ onFilterChange }) => {
       setNavItems(allItems);
     } catch (err) {
       console.error('Ошибка загрузки типов животных:', err);
-      setError('Не удалось загрузить категории');
+      setError('Ошибка загрузки типов животных');
       setNavItems([]);
     } finally {
       setLoading(false);

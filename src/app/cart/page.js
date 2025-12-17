@@ -13,7 +13,7 @@ import {
 } from '@/utils/cart';
 import { productService } from '@/api/productService';
 import { useUser } from '@/app/providers/UserProvider';
-import CartItem from '@/components/CartItem';
+import CartItem from '@/components/cart/CartItem';
 import styles from './page.module.css';
 
 export default function CartPage() {

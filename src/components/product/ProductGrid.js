@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import ProductCard from './ProductCard';
-import ProductModal from '@/components/ProductModal';
+import ProductModal from '@/components/product/ProductModal';
 import { ProductQueryParameters } from '@/models/product';
 import { productService } from '@/api/productService';
 import styles from './ProductGrid.module.css';
