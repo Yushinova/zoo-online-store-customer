@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import AddressInput from '@/components/yandex/AddressInput';
 import { addressService } from '@/api/addressService';
 import { orderService } from '@/api/orderService';
+import { clearCart } from '@/utils/cart';
 import styles from './CheckoutTab.module.css';
 
 export default function CheckoutTab({ 
@@ -150,6 +151,7 @@ export default function CheckoutTab({
       // Создаем заказ через orderService
       const createdOrder = await orderService.create(orderData);
       console.log('Заказ успешно создан:', createdOrder);
+      clearCart();
 
       // Вызываем callback для очистки данных на странице
       if (onConfirmOrder) {

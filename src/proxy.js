@@ -13,15 +13,10 @@ export function proxy(request) {
     '/delivery',
     '/payment',
     '/cart',
-    '/auth',
+    '/auth', // 🔥 Страница авторизации теперь всегда публичная
     '/_next',
     '/public',
   ];
-  
-  const isPublicPage = publicPages.some(page => 
-    pathname.startsWith(page) || 
-    pathname.match(/^\/product\/[a-zA-Z0-9-_]+$/)
-  );
   
   // === МЕТОДЫ ЗАПРОСА ===
   const isPOST = method === 'POST';
@@ -81,23 +76,30 @@ export function proxy(request) {
     return NextResponse.redirect(authUrl);
   }
   
-  // 3. Если пользователь авторизован и пытается зайти на страницу авторизации
-  if (token && pathname.startsWith('/auth')) {
-    const redirectParam = nextUrl.searchParams.get('redirect');
-    const redirectUrl = redirectParam 
-      ? decodeURIComponent(redirectParam)
-      : '/';
+  // 🔥 КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ:
+  // УБИРАЕМ автоматический редирект с /auth при наличии токена
+  // Вместо этого просто пропускаем на /auth
+  
+  // 3. Страница /auth всегда доступна, независимо от токена
+  if (pathname.startsWith('/auth')) {
+    const response = NextResponse.next();
     
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+    // Добавляем заголовок, чтобы клиент знал о наличии токена
+    if (token) {
+      response.headers.set('X-User-Token', 'exists');
+      response.headers.set('X-Auth-Page-Access', 'granted-with-token');
+    }
+    
+    return response;
   }
   
   // 4. Для всех остальных случаев пропускаем запрос
   const response = NextResponse.next();
   
-  // 5. Добавляем обработку 401 ошибок из бэкенда
-  // Если бэкенд возвращает 401, мы перехватим это в fetch-запросах на клиенте
-  // Но здесь можно добавить заголовок для клиента
-  response.headers.set('X-Auth-Required', 'false');
+  // 5. Добавляем информацию о токене
+  if (token) {
+    response.headers.set('X-User-Token', 'exists');
+  }
   
   return response;
 }
