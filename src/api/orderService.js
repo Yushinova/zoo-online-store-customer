@@ -109,5 +109,37 @@ export class OrderService {
       throw error;
     }
   }
+   //обновить заказ по id
+  async updateOrderById(orderId, updateData) {
+    try {
+
+      console.log('🔄 Updating order:', orderId, updateData);
+
+      const response = await fetch(
+        `${this.baseUrl}/api/order/admin/${orderId}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(updateData)
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.Message || `HTTP error! status: ${response.status}`);
+      }
+
+      const updatedOrder = await response.json();
+      console.log('✅ Order updated successfully:', updatedOrder);
+      return updatedOrder;
+
+    } catch (error) {
+      console.error('Error updating order:', error);
+      throw error;
+    }
+  }
 }
 export const orderService = new OrderService();

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { userService } from '@/api/userService';
 
 const UserContext = createContext({
@@ -18,17 +18,16 @@ export function UserProvider({ children }) {
     isClient: false
   });
 
-  useEffect(() => {
-    // 1. Загружаем пользователя
-    const savedApiKey = userService.loadApiKeyFromStorage();
-    
-    if (savedApiKey) {
-      userService.setApiKey(savedApiKey);
-      loadUser(savedApiKey);
-    } else {
-      setState(prev => ({ ...prev, loading: false, isClient: true }));
-    }
+  // useRef для хранения кэша между рендерами
+  const userCache = useRef({
+    data: null,
+    timestamp: 0
+  });
 
+  useEffect(() => {
+    // 1. Загружаем пользователя при монтировании
+    loadUserOnMount();
+    
     // 2. Настраиваем перехватчик fetch для обработки 401 ошибок
     if (typeof window !== 'undefined') {
       setupFetchInterceptor();
@@ -37,6 +36,8 @@ export function UserProvider({ children }) {
 
   // Настройка интерцептора fetch
   const setupFetchInterceptor = () => {
+    if (typeof window === 'undefined') return;
+    
     const originalFetch = window.fetch;
     
     window.fetch = async (...args) => {
@@ -54,40 +55,20 @@ export function UserProvider({ children }) {
   // Обработка 401 ошибки из fetch
   const handleFetchUnauthorized = async (response) => {
     try {
-      // Пытаемся получить данные ошибки
       const errorData = await response.clone().json().catch(() => ({}));
-      
-      // Вызываем общую функцию очистки
       await handleUnauthorized(errorData);
     } catch (error) {
       console.error('Error handling 401:', error);
-      // Если не получилось распарсить JSON, все равно очищаем
       await handleUnauthorized();
-    }
-  };
-
-  const loadUser = async (apiKey) => {
-    try {
-      const userData = await userService.getUser(apiKey);
-      setState({
-        user: userData,
-        loading: false,
-        isClient: true
-      });
-    } catch (error) {
-      // Проверяем 401 ошибку
-      if (error?.status === 401 || error?.response?.status === 401) {
-        await handleUnauthorized();
-      } else {
-        console.error('Failed to load user:', error);
-        clearAuth();
-      }
     }
   };
 
   // Общая функция для обработки неавторизованного доступа
   const handleUnauthorized = async (errorData = null) => {
-    // Очищаем на сервере (если есть API для logout)
+    // Очищаем кэш
+    userCache.current = { data: null, timestamp: 0 };
+    
+    // Очищаем на сервере
     try {
       await userService.logout();
     } catch (e) {
@@ -114,6 +95,54 @@ export function UserProvider({ children }) {
     }, 100);
   };
 
+  const loadUserOnMount = async () => {
+    // Проверяем кэш (5 минут)
+    const now = Date.now();
+    if (userCache.current.data && (now - userCache.current.timestamp) < 5 * 60 * 1000) {
+      setState({
+        user: userCache.current.data,
+        loading: false,
+        isClient: true
+      });
+      return;
+    }
+
+    // Загружаем API-ключ из localStorage
+    const savedApiKey = userService.loadApiKeyFromStorage();
+    
+    if (savedApiKey) {
+      userService.setApiKey(savedApiKey);
+      await loadUser(savedApiKey);
+    } else {
+      setState(prev => ({ ...prev, loading: false, isClient: true }));
+    }
+  };
+
+  const loadUser = async (apiKey) => {
+    try {
+      const userData = await userService.getUser(apiKey);
+      
+      // Сохраняем в кэш
+      userCache.current = {
+        data: userData,
+        timestamp: Date.now()
+      };
+      
+      setState({
+        user: userData,
+        loading: false,
+        isClient: true
+      });
+    } catch (error) {
+      if (error?.status === 401 || error?.response?.status === 401) {
+        await handleUnauthorized();
+      } else {
+        console.error('Failed to load user:', error);
+        clearAuth();
+      }
+    }
+  };
+
   const login = async (apiKey) => {
     userService.setApiKey(apiKey);
     await loadUser(apiKey);
@@ -125,6 +154,9 @@ export function UserProvider({ children }) {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      // Очищаем кэш
+      userCache.current = { data: null, timestamp: 0 };
+      
       clearAuth();
       window.location.href = '/';
     }
@@ -139,6 +171,9 @@ export function UserProvider({ children }) {
   };
 
   const refetch = () => {
+    // Очищаем кэш и загружаем заново
+    userCache.current = { data: null, timestamp: 0 };
+    
     const apiKey = userService.loadApiKeyFromStorage();
     if (apiKey) loadUser(apiKey);
   };

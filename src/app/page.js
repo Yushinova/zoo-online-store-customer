@@ -15,9 +15,9 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <UserProvider>
+     
           <Header />
-      </UserProvider>
+      
       
       <NavigationBar onFilterChange={handleNavFilterChange} />
       
@@ -26,6 +26,7 @@ export default function Home() {
       </main>
       
       <Footer />
+     
     </div>
   );
 }

@@ -10,14 +10,15 @@ export class UserService {
   setApiKey(apiKey) {
     this.apiKey = apiKey;
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem('apiKey', apiKey); // ⭐ Только API ключ
+      // ⭐ ХРАНИМ В localStorage (сохраняется после закрытия браузера)
+      localStorage.setItem('apiKey', apiKey);
     }
   }
 
-  // ⭐ УБИРАЕМ localStorage! Данные только в памяти
+  // Данные пользователя ТОЛЬКО в памяти (безопасно!)
   setCurrentUser(user) {
     this.currentUser = user;
-    // НИКАКОГО localStorage.setItem('userData', ...)
+    // НИКАКОГО localStorage для данных пользователя!
   }
 
   async register(userData) {
@@ -110,18 +111,17 @@ export class UserService {
     }
   }
 
-  // ⭐ УБИРАЕМ loadFromStorage - не восстанавливаем user данные
-  // Восстанавливаем только apiKey
+  // ⭐ ЗАГРУЖАЕМ ИЗ localStorage
   loadApiKeyFromStorage() {
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('apiKey');
+      return localStorage.getItem('apiKey'); // Только localStorage
     }
     return null;
   }
 
   async logout() {
     this.apiKey = null;
-    this.currentUser = null; // ⭐ Очищаем память
+    this.currentUser = null;
 
     try {
       // Вызываем logout на бэкенде чтобы удалить cookies
@@ -136,25 +136,30 @@ export class UserService {
       this.apiKey = null;
       this.currentUser = null;
       
-      // ⭐ УБИРАЕМ localStorage.removeItem('userData');
-      
-      // Очищаем sessionStorage
+      // ⭐ ОЧИЩАЕМ localStorage
       if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('apiKey');
+        localStorage.removeItem('apiKey');
       }
       
       // Удаляем cookies на фронтенде
       document.cookie = 'userToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     }
   }
+
+  // ⭐ Дополнительный метод для очистки только API-ключа
+  clearApiKeyOnly() {
+    this.apiKey = null;
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('apiKey');
+    }
+  }
 }
 
 export const userService = new UserService();
 
-// ⭐ УБИРАЕМ userService.loadFromStorage();
-// Восстанавливаем только apiKey при необходимости
+// ⭐ Восстанавливаем API-ключ из localStorage при инициализации
 const savedApiKey = userService.loadApiKeyFromStorage();
 if (savedApiKey) {
   userService.setApiKey(savedApiKey);
-  // НЕ загружаем user автоматически - пусть компоненты делают это когда нужно
+  // Данные пользователя НЕ восстанавливаем - загрузим с сервера при необходимости
 }

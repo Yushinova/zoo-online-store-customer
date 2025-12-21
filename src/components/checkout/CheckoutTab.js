@@ -5,6 +5,7 @@ import AddressInput from '@/components/yandex/AddressInput';
 import { addressService } from '@/api/addressService';
 import { orderService } from '@/api/orderService';
 import { clearCart } from '@/utils/cart';
+import MockPayment from '../MockPayment';
 import styles from './CheckoutTab.module.css';
 
 export default function CheckoutTab({ 
@@ -21,7 +22,9 @@ export default function CheckoutTab({
   const [selectedAddressText, setSelectedAddressText] = useState('');
   const [useNewAddress, setUseNewAddress] = useState(false);
   const [newAddress, setNewAddress] = useState('');
-  const [shippingCost, setShippingCost] = useState(0); // Можно рассчитать стоимость доставки
+  const [shippingCost, setShippingCost] = useState(0);
+  const [createdOrder, setCreatedOrder] = useState(null);
+  const [showMockPayment, setShowMockPayment] = useState(false);
 
   // Загружаем сохраненные адреса пользователя
   useEffect(() => {
@@ -92,9 +95,9 @@ export default function CheckoutTab({
 
     // Данные заказа в соответствии с OrderRequest
     const orderData = {
-      shippingCost: shippingCost, // Можно рассчитать на бэке
-      amount: discountedTotal,
-      status: 'Pending', // или 'New', 'Processing' - зависит от вашего workflow
+      shippingCost: shippingCost,
+      amount: discountedTotal + shippingCost,
+      status: 'New',
       shippingAddress: selectedAddressText,
       userId: userId,
       orderItems: orderItems
@@ -108,7 +111,6 @@ export default function CheckoutTab({
     setSelectedAddressId(addressId);
     setSelectedAddressText(addressText);
     setUseNewAddress(false);
-    // Здесь можно рассчитать стоимость доставки по адресу
     calculateShippingCost(addressText);
   };
 
@@ -121,24 +123,23 @@ export default function CheckoutTab({
     calculateShippingCost(addressText);
   };
 
-  // Расчет стоимости доставки (заглушка - можно интегрировать с API доставки)
+  // Расчет стоимости доставки
   const calculateShippingCost = (address) => {
-    // Простой пример расчета
-    if (address && address.includes('Москва') || address.includes('Санкт-Петербург')) {
-      setShippingCost(300); // Доставка по Москве/СПб - 300₽
+    if (address && (address.includes('Москва') || address.includes('Санкт-Петербург'))) {
+      setShippingCost(300);
     } else {
-      setShippingCost(500); // Доставка в другие города - 500₽
+      setShippingCost(500);
     }
   };
 
-  // Обработчик подтверждения заказа
-  const handleConfirm = async () => {
+  // Создание заказа и переход к оплате
+  const handleCreateOrderAndPay = async () => {
     if (!selectedAddressText) {
       alert('Пожалуйста, выберите или введите адрес доставки');
       return;
     }
 
-    if (!confirm('Подтвердить оформление заказа?')) {
+    if (!confirm(`Подтвердить заказ на сумму ${formatPrice(totalWithShipping)}?`)) {
       return;
     }
 
@@ -151,14 +152,12 @@ export default function CheckoutTab({
       // Создаем заказ через orderService
       const createdOrder = await orderService.create(orderData);
       console.log('Заказ успешно создан:', createdOrder);
-      clearCart();
-
-      // Вызываем callback для очистки данных на странице
-      if (onConfirmOrder) {
-        await onConfirmOrder(createdOrder);
-      }
-
-      alert(`Заказ успешно оформлен! Номер заказа: ${createdOrder.orderNumber || createdOrder.id}`);
+      
+      // Сохраняем созданный заказ
+      setCreatedOrder(createdOrder);
+      
+      // Показываем модальное окно оплаты
+      setShowMockPayment(true);
 
     } catch (error) {
       console.error('Ошибка при оформлении заказа:', error);
@@ -166,6 +165,32 @@ export default function CheckoutTab({
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  // Обработчик успешной оплаты
+  const handlePaymentSuccess = (paymentResult) => {
+    console.log('Оплата прошла успешно:', paymentResult);
+    createdOrder.status = "Paid";
+    const updated = orderService.updateOrderById(createdOrder.id, createdOrder);
+    setCreatedOrder(createdOrder);
+    // Очищаем корзину
+    clearCart();
+    
+    // Скрываем модалку
+    setShowMockPayment(false);
+    
+    // Вызываем callback для очистки данных на странице
+    if (onConfirmOrder && createdOrder) {
+      onConfirmOrder(createdOrder);
+    }
+    
+    alert(`✅ Заказ №${createdOrder?.orderNumber || createdOrder?.id} успешно оплачен!`);
+  };
+
+  // Обработчик отмены оплаты
+  const handlePaymentCancel = () => {
+    setShowMockPayment(false);
+    alert('Оплата отменена');
   };
 
   const finalAmount = calculateDiscountedPrice(checkoutData.totalAmount).discounted;
@@ -346,14 +371,45 @@ export default function CheckoutTab({
         >
           Отмена
         </button>
+        
         <button
-          onClick={handleConfirm}
+          onClick={handleCreateOrderAndPay}
           disabled={isProcessing || !selectedAddressText}
-          className={styles.confirmButton}
+          className={styles.payButton}
         >
-          {isProcessing ? 'Оформляем заказ...' : `Оформить заказ за ${formatPrice(totalWithShipping)}`}
+          {isProcessing ? 'Создаем заказ...' : `Оплатить ${formatPrice(totalWithShipping)}`}
         </button>
       </div>
+
+      {/* Информация о заказе */}
+      {createdOrder && !showMockPayment && (
+        <div className={styles.orderInfo}>
+          <h4>✅ Заказ оформлен</h4>
+          <p>Номер заказа: <strong>{createdOrder.orderNumber || createdOrder.id}</strong></p>
+          <p>Сумма к оплате: <strong>{formatPrice(totalWithShipping)}</strong></p>
+          <p>Адрес доставки: <strong>{selectedAddressText}</strong></p>
+          <button 
+            onClick={() => setShowMockPayment(true)}
+            className={styles.showPaymentButton}
+          >
+            Перейти к оплате
+          </button>
+        </div>
+      )}
+
+      {/* Модальное окно оплаты */}
+      {showMockPayment && createdOrder && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <MockPayment
+              amount={totalWithShipping}
+              orderId={createdOrder.orderNumber || createdOrder.id}
+              onSuccess={handlePaymentSuccess}
+              onCancel={handlePaymentCancel}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

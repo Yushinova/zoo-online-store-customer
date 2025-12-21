@@ -1,537 +1,440 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import AddressInput from '@/components/yandex/AddressInput';
+import { addressService } from '@/api/addressService';
+import { orderService } from '@/api/orderService';
+import { clearCart } from '@/utils/cart';
+import styles from './CheckoutTab.module.css';
 
-export default function TestComponentPage() {
-  const [isYmapsLoaded, setIsYmapsLoaded] = useState(false);
-  const [receivedData, setReceivedData] = useState(null);
-  const [testHistory, setTestHistory] = useState([]);
+export default function CheckoutTab({ 
+  checkoutData, 
+  userData, 
+  onConfirmOrder, 
+  onCancelOrder, 
+  userId 
+}) {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [userAddresses, setUserAddresses] = useState([]);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [selectedAddressText, setSelectedAddressText] = useState('');
+  const [useNewAddress, setUseNewAddress] = useState(false);
+  const [newAddress, setNewAddress] = useState('');
+  const [shippingCost, setShippingCost] = useState(0);
+  const [createdOrder, setCreatedOrder] = useState(null);
 
-  // Загружаем ymaps3 для тестовой страницы
+  // Загружаем сохраненные адреса пользователя
   useEffect(() => {
-    if (window.ymaps3) {
-      console.log('✅ ymaps3 уже загружен');
-      setIsYmapsLoaded(true);
+    if (!userId) return;
+
+    const loadAddresses = async () => {
+      setLoadingAddresses(true);
+      try {
+        const addresses = await addressService.getByUserId(userId);
+        setUserAddresses(addresses || []);
+        
+        if (addresses && addresses.length > 0) {
+          setSelectedAddressId(addresses[0].id);
+          setSelectedAddressText(addresses[0].fullAddress);
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки адресов:', error);
+      } finally {
+        setLoadingAddresses(false);
+      }
+    };
+
+    loadAddresses();
+  }, [userId]);
+
+  // Форматирование цены
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: 'RUB',
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  // Расчет скидки
+  const calculateDiscountedPrice = (total) => {
+    if (userData.discont > 0) {
+      const discount = total * (userData.discont / 100);
+      return {
+        original: total,
+        discounted: total - discount,
+        discount: discount
+      };
+    }
+    return {
+      original: total,
+      discounted: total,
+      discount: 0
+    };
+  };
+
+  // Подготовка данных для OrderRequest
+  const prepareOrderData = () => {
+    const discountedTotal = userData.discont > 0 
+      ? calculateDiscountedPrice(checkoutData.totalAmount).discounted 
+      : checkoutData.totalAmount;
+
+    const orderItems = checkoutData.items.map(item => ({
+      quantity: item.quantity,
+      unitPrice: item.product.price,
+      price: item.product.price * item.quantity,
+      ProductName: item.product.name,
+      productId: item.product.id || 0,
+      orderId: 0
+    }));
+
+    const orderData = {
+      shippingCost: shippingCost,
+      amount: discountedTotal + shippingCost,
+      status: 'Pending',
+      shippingAddress: selectedAddressText,
+      userId: userId,
+      orderItems: orderItems
+    };
+
+    return orderData;
+  };
+
+  // Обработчик выбора адреса
+  const handleAddressSelect = (addressId, addressText) => {
+    setSelectedAddressId(addressId);
+    setSelectedAddressText(addressText);
+    setUseNewAddress(false);
+    calculateShippingCost(addressText);
+  };
+
+  // Обработчик выбора нового адреса
+  const handleNewAddressSelect = (address) => {
+    const addressText = address?.formattedAddress || address || '';
+    setNewAddress(addressText);
+    setSelectedAddressText(addressText);
+    setUseNewAddress(true);
+    calculateShippingCost(addressText);
+  };
+
+  // Расчет стоимости доставки
+  const calculateShippingCost = (address) => {
+    if (address && (address.includes('Москва') || address.includes('Санкт-Петербург'))) {
+      setShippingCost(300);
+    } else {
+      setShippingCost(500);
+    }
+  };
+
+  // Функция для создания платежа через Yandex Pay
+  const createYandexPayment = async (orderId, totalAmount) => {
+    try {
+      const response = await fetch('/api/payment/yandex/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: orderId,
+          items: checkoutData.items.map(item => ({
+            productId: item.product.id,
+            price: item.product.price,
+            quantity: item.quantity,
+            ProductName: item.product.name,
+          })),
+          totalAmount: totalAmount,
+          userId: userId,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Ошибка создания платежа');
+      }
+
+      const data = await response.json();
+      return data.paymentUrl;
+    } catch (error) {
+      console.error('Ошибка при создании платежа:', error);
+      throw error;
+    }
+  };
+
+  // Обработчик подтверждения заказа
+  const handleConfirm = async () => {
+    if (!selectedAddressText) {
+      alert('Пожалуйста, выберите или введите адрес доставки');
       return;
     }
 
-   
-    const script = document.createElement('script');
-    script.src = `https://api-maps.yandex.ru/v3/?apikey=${process.env.NEXT_PUBLIC_YANDEX_API_KEY}&lang=ru_RU`;
-    script.async = true;
-    
-    script.onload = () => {
-      console.log('✅ Скрипт ymaps3 загружен');
-      setIsYmapsLoaded(true);
-    };
-    
-    script.onerror = () => {
-      console.error('❌ Ошибка загрузки ymaps3');
-    };
+    if (!confirm('Подтвердить оформление заказа?')) {
+      return;
+    }
 
-    document.head.appendChild(script);
-  }, []);
-
-  // Обработчик данных из AddressInput
-  const handleAddressSelect = (data) => {
-    console.log('📨 Получены данные от AddressInput:', data);
-    setReceivedData(data);
-    
-    // Добавляем в историю тестов
-    setTestHistory(prev => [{
-      id: Date.now(),
-      time: new Date().toLocaleTimeString(),
-      input: data?.formattedAddress || 'Нет данных',
-      type: data?.addressType || 'unknown',
-      data: data
-    }, ...prev.slice(0, 9)]); // Храним последние 10 записей
-  };
-
-  // Тестовые сценарии
-  const runTestScenario = async (scenario) => {
-    console.log(`🧪 Запускаем тест: ${scenario.name}`);
-    
+    setIsProcessing(true);
     try {
-      // Имитируем ввод и выбор подсказки
-      const testInput = scenario.query;
-      console.log(`Ввод: "${testInput}"`);
+      const orderData = prepareOrderData();
+      console.log('Отправка заказа на сервер:', orderData);
+
+      // Создаем заказ в нашей системе
+      const createdOrder = await orderService.create(orderData);
+      console.log('Заказ успешно создан:', createdOrder);
       
-      // Вызываем suggest напрямую для проверки
-      if (window.ymaps3?.suggest) {
-        const results = await window.ymaps3.suggest({
-          text: testInput,
-          results: 5
-        });
-        
-        console.log(`Результаты для "${testInput}":`, results);
-        
-        if (results.length > 0) {
-          // Симулируем выбор первой подсказки
-          console.log('Выбираем первую подсказку:', results[0]);
-          handleAddressSelect({
-            Country: 'Россия',
-            City: results[0].subtitle?.text || '',
-            Street: results[0].title?.text || '',
-            Home: results[0].type === 'house' ? results[0].title?.text?.match(/\d+/)?.[0] || '' : '',
-            PostalCode: '',
-            UserId: 0,
-            formattedAddress: results[0].value || `${results[0].subtitle?.text}, ${results[0].title?.text}`,
-            addressType: results[0].type || 'unknown',
-            yandexUri: results[0].uri,
-            rawSuggestion: results[0]
-          });
-        }
+      setCreatedOrder(createdOrder);
+      clearCart();
+      
+      if (onConfirmOrder) {
+        await onConfirmOrder(createdOrder);
       }
+
+      alert(`Заказ успешно оформлен! Номер заказа: ${createdOrder.orderNumber || createdOrder.id}`);
+
     } catch (error) {
-      console.error(`Ошибка в тесте ${scenario.name}:`, error);
+      console.error('Ошибка при оформлении заказа:', error);
+      alert(`Ошибка при оформлении заказа: ${error.message}`);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const testScenarios = [
-    { name: 'Улица в Москве', query: 'Москва, Тверская' },
-    { name: 'Дом в Москве', query: 'Москва, Тверская 10' },
-    { name: 'Ваш адрес', query: 'Красный Сулин, улица Мокроусова 46' },
-    { name: 'Город', query: 'Красный Сулин' },
-    { name: 'Область', query: 'Ростовская область' }
-  ];
+  // Обработчик оплаты через Yandex Pay
+  const handleYandexPayment = async () => {
+    if (!createdOrder) {
+      alert('Сначала оформите заказ');
+      return;
+    }
 
-  if (!isYmapsLoaded) {
-    return (
-      <div className="loader-container">
-        <div className="spinner-large"></div>
-        <p>Загрузка Яндекс.Карт для тестирования...</p>
-        <p className="hint">Проверьте консоль (F12) для отслеживания процесса</p>
-      </div>
-    );
-  }
+    setIsProcessingPayment(true);
+    try {
+      // Получаем paymentUrl от Yandex Pay
+      const paymentUrl = await createYandexPayment(
+        createdOrder.id,
+        totalWithShipping
+      );
+      
+      // Перенаправляем на страницу оплаты Yandex Pay
+      window.location.href = paymentUrl;
+      
+    } catch (error) {
+      console.error('Ошибка при оплате:', error);
+      alert(`Ошибка при оплате: ${error.message}`);
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const finalAmount = calculateDiscountedPrice(checkoutData.totalAmount).discounted;
+  const discountAmount = calculateDiscountedPrice(checkoutData.totalAmount).discount;
+  const totalWithShipping = finalAmount + shippingCost;
 
   return (
-    <div className="test-container">
-      <header className="test-header">
-        <h1>🧪 Тестирование компонента AddressInput</h1>
-        <p>Проверяем работу подсказок и парсинг данных для C# бэкенда</p>
-      </header>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>Оформление заказа</h3>
+        <button onClick={onCancelOrder} className={styles.backButton}>
+          ← Вернуться в корзину
+        </button>
+      </div>
 
-      <div className="test-grid">
-        {/* Левая колонка: сам компонент */}
-        <div className="test-section">
-          <h2>1. Компонент AddressInput</h2>
-          <div className="component-wrapper">
-            <AddressInput onAddressSelect={handleAddressSelect} />
-          </div>
-          
-          <div className="test-instructions">
-            <h3>Как тестировать:</h3>
-            <ol>
-              <li>Начните вводить адрес в поле выше</li>
-              <li>Выберите подсказку из выпадающего списка</li>
-              <li>Данные появятся справа в разделе "Результат"</li>
-              <li>Проверьте консоль браузера (F12 → Console) для деталей</li>
-            </ol>
-          </div>
+      {/* Информация о покупателе */}
+      <div className={styles.userInfo}>
+        <div className={styles.infoCard}>
+          <h4>Информация о покупателе</h4>
+          <p><strong>Имя:</strong> {userData.name || 'Не указано'}</p>
+          <p><strong>Телефон:</strong> {userData.phone || 'Не указан'}</p>
+          <p><strong>Email:</strong> {userData.email}</p>
+          {userData.discont > 0 && (
+            <p className={styles.discountBadge}>
+              Ваша скидка: {userData.discont}%
+            </p>
+          )}
         </div>
 
-        {/* Правая колонка: результат и тесты */}
-        <div className="test-section">
-          <h2>2. Результат и данные для C#</h2>
-          
-          {receivedData ? (
-            <div className="result-card">
-              <div className="result-header">
-                <h3>📦 Данные для C# бэкенда</h3>
-                <span className="type-badge">{receivedData.addressType || 'unknown'}</span>
+        <div className={styles.infoCard}>
+          <h4>Информация о заказе</h4>
+          <p><strong>Товаров:</strong> {checkoutData.totalItems} шт.</p>
+          <p><strong>Дата:</strong> {new Date().toLocaleDateString('ru-RU')}</p>
+        </div>
+      </div>
+
+      {/* Состав заказа */}
+      <div className={styles.orderSummary}>
+        <h4>Состав заказа:</h4>
+        <div className={styles.itemsList}>
+          {checkoutData.items.map((item, index) => (
+            <div key={index} className={styles.orderItem}>
+              <div className={styles.itemImagePlaceholder}>
+                {item.product.name?.charAt(0) || 'Т'}
               </div>
-              
-              <div className="data-grid">
-    
-                <div className="data-field">
-                  <label>UserId</label>
-                  <div className="data-value">{receivedData.UserId}</div>
+              <div className={styles.itemDetails}>
+                <h5>{item.product.name}</h5>
+                <div className={styles.itemMeta}>
+                  <span>Количество: {item.quantity}</span>
+                  <span>Цена: {formatPrice(item.product.price)}</span>
+                  <span>Сумма: {formatPrice(item.product.price * item.quantity)}</span>
                 </div>
               </div>
-              
-              <div className="full-address">
-                <label>Полный адрес:</label>
-                <div>{receivedData.formattedAddress || 'error'}</div>
-              </div>
-              
-              <details className="raw-data">
-                <summary>📋 Показать сырые данные от Яндекса</summary>
-                <pre>{JSON.stringify(receivedData.rawSuggestion, null, 2)}</pre>
-              </details>
-              
-              <button 
-                onClick={() => {
-                  const jsonStr = JSON.stringify({
-                    Country: receivedData.Country,
-                    City: receivedData.City,
-                    Street: receivedData.Street,
-                    Home: receivedData.Home,
-                    PostalCode: receivedData.PostalCode,
-                    UserId: receivedData.UserId
-                  }, null, 2);
-                  navigator.clipboard.writeText(jsonStr);
-                  alert('✅ JSON скопирован в буфер!');
-                }}
-                className="copy-button"
-              >
-                📋 Скопировать JSON для бэкенда
-              </button>
             </div>
-          ) : (
-            <div className="empty-state">
-              <div className="empty-icon">📍</div>
-              <p>Данные появятся здесь после выбора адреса</p>
-              <p className="hint">Попробуйте ввести адрес в поле слева</p>
+          ))}
+        </div>
+
+        {/* Итоговая сумма */}
+        <div className={styles.totalSummary}>
+          <div className={styles.totalRow}>
+            <span>Сумма товаров:</span>
+            <span>{formatPrice(checkoutData.totalAmount)}</span>
+          </div>
+          
+          {userData.discont > 0 && (
+            <div className={styles.totalRow}>
+              <span>Скидка {userData.discont}%:</span>
+              <span className={styles.discount}>
+                -{formatPrice(discountAmount)}
+              </span>
             </div>
           )}
 
-          <div className="test-scenarios">
-            <h3>🚀 Быстрые тесты</h3>
-            <div className="scenario-buttons">
-              {testScenarios.map((scenario, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => runTestScenario(scenario)}
-                  className="scenario-button"
-                >
-                  {scenario.name}
-                </button>
-              ))}
-            </div>
+          <div className={styles.totalRow}>
+            <span>Стоимость доставки:</span>
+            <span>{formatPrice(shippingCost)}</span>
+          </div>
+
+          <div className={styles.totalRow}>
+            <span className={styles.finalPriceLabel}>Итого к оплате:</span>
+            <span className={styles.finalPrice}>
+              {formatPrice(totalWithShipping)}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* История тестов */}
-      {testHistory.length > 0 && (
-        <div className="test-history">
-          <h3>📋 История тестов (последние 10)</h3>
-          <div className="history-list">
-            {testHistory.map((test) => (
-              <div key={test.id} className="history-item">
-                <div className="history-time">{test.time}</div>
-                <div className="history-input">{test.input}</div>
-                <span className={`history-type ${test.type}`}>{test.type}</span>
-              </div>
-            ))}
+      {/* Выбор адреса доставки */}
+      <div className={styles.deliverySection}>
+        <h4>Выберите адрес доставки:</h4>
+        
+        {/* Сохраненные адреса */}
+        {!loadingAddresses && userAddresses.length > 0 && (
+          <div className={styles.savedAddresses}>
+            <h5>Ваши сохраненные адреса:</h5>
+            <div className={styles.addressesList}>
+              {userAddresses.map(address => (
+                <div 
+                  key={address.id}
+                  className={`${styles.addressCard} ${selectedAddressId === address.id && !useNewAddress ? styles.selected : ''}`}
+                  onClick={() => handleAddressSelect(address.id, address.fullAddress)}
+                >
+                  <div className={styles.radio}>
+                    <input
+                      type="radio"
+                      name="deliveryAddress"
+                      checked={selectedAddressId === address.id && !useNewAddress}
+                      onChange={() => handleAddressSelect(address.id, address.fullAddress)}
+                    />
+                  </div>
+                  <div className={styles.addressText}>
+                    {address.fullAddress}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Стили для тестовой страницы */}
-      <style jsx>{`
-        .test-container {
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-          min-height: 100vh;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        }
-        
-        .test-header {
-          text-align: center;
-          margin-bottom: 3rem;
-        }
-        
-        .test-header h1 {
-          font-size: 2.5rem;
-          color: #1e293b;
-          margin-bottom: 0.5rem;
-        }
-        
-        .test-header p {
-          color: #64748b;
-          font-size: 1.1rem;
-        }
-        
-        .test-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-          margin-bottom: 3rem;
-        }
-        
-        @media (max-width: 1024px) {
-          .test-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-        
-        .test-section {
-          background: white;
-          padding: 2rem;
-          border-radius: 1rem;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-        
-        .test-section h2 {
-          color: #334155;
-          margin-bottom: 1.5rem;
-          font-size: 1.5rem;
-        }
-        
-        .component-wrapper {
-          margin-bottom: 2rem;
-        }
-        
-        .test-instructions {
-          background: #f0f9ff;
-          padding: 1.5rem;
-          border-radius: 0.75rem;
-          border: 1px solid #bae6fd;
-        }
-        
-        .test-instructions h3 {
-          color: #0369a1;
-          margin-bottom: 1rem;
-        }
-        
-        .test-instructions ol {
-          padding-left: 1.5rem;
-          color: #0c4a6e;
-        }
-        
-        .test-instructions li {
-          margin-bottom: 0.5rem;
-        }
-        
-        .result-card {
-          background: #f8fafc;
-          padding: 1.5rem;
-          border-radius: 0.75rem;
-          border: 1px solid #e2e8f0;
-        }
-        
-        .result-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1.5rem;
-        }
-        
-        .type-badge {
-          padding: 0.25rem 0.75rem;
-          background: #dbeafe;
-          color: #1e40af;
-          border-radius: 1rem;
-          font-size: 0.875rem;
-          font-weight: 500;
-        }
-        
-        .data-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-        }
-        
-        .data-field {
-          background: white;
-          padding: 0.75rem;
-          border-radius: 0.5rem;
-          border: 1px solid #e2e8f0;
-        }
-        
-        .data-field label {
-          display: block;
-          font-size: 0.75rem;
-          color: #64748b;
-          margin-bottom: 0.25rem;
-          font-weight: 500;
-        }
-        
-        .data-value {
-          font-weight: 600;
-          color: #1e293b;
-        }
-        
-        .data-value.has-value {
-          color: #059669;
-        }
-        
-        .full-address {
-          background: white;
-          padding: 1rem;
-          border-radius: 0.5rem;
-          border: 1px solid #e2e8f0;
-          margin-bottom: 1.5rem;
-        }
-        
-        .full-address label {
-          display: block;
-          font-size: 0.875rem;
-          color: #64748b;
-          margin-bottom: 0.5rem;
-        }
-        
-        .full-address div {
-          font-weight: 500;
-          color: #1e293b;
-        }
-        
-        .raw-data {
-          margin-bottom: 1.5rem;
-        }
-        
-        .raw-data summary {
-          cursor: pointer;
-          padding: 0.75rem;
-          background: #f1f5f9;
-          border-radius: 0.5rem;
-          color: #475569;
-          font-weight: 500;
-          margin-bottom: 0.5rem;
-        }
-        
-        .raw-data pre {
-          background: #1e293b;
-          color: #e2e8f0;
-          padding: 1rem;
-          border-radius: 0.5rem;
-          font-size: 0.875rem;
-          overflow-x: auto;
-          max-height: 300px;
-          overflow-y: auto;
-        }
-        
-        .copy-button {
-          width: 100%;
-          padding: 1rem;
-          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-          color: white;
-          border: none;
-          border-radius: 0.5rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: transform 0.2s;
-        }
-        
-        .copy-button:hover {
-          transform: translateY(-2px);
-        }
-        
-        .empty-state {
-          text-align: center;
-          padding: 3rem 2rem;
-          background: #f8fafc;
-          border: 2px dashed #cbd5e1;
-          border-radius: 0.75rem;
-        }
-        
-        .empty-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-          opacity: 0.5;
-        }
-        
-        .test-scenarios {
-          margin-top: 2rem;
-        }
-        
-        .scenario-buttons {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-          margin-top: 1rem;
-        }
-        
-        .scenario-button {
-          padding: 0.5rem 1rem;
-          background: #e2e8f0;
-          color: #475569;
-          border: none;
-          border-radius: 0.5rem;
-          cursor: pointer;
-          font-size: 0.875rem;
-          transition: all 0.2s;
-        }
-        
-        .scenario-button:hover {
-          background: #cbd5e1;
-          transform: translateY(-1px);
-        }
-        
-        .test-history {
-          background: white;
-          padding: 2rem;
-          border-radius: 1rem;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-        
-        .history-list {
-          margin-top: 1rem;
-        }
-        
-        .history-item {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 0.75rem;
-          border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .history-item:last-child {
-          border-bottom: none;
-        }
-        
-        .history-time {
-          font-size: 0.875rem;
-          color: #64748b;
-          min-width: 80px;
-        }
-        
-        .history-input {
-          flex: 1;
-          font-weight: 500;
-          color: #334155;
-        }
-        
-        .history-type {
-          padding: 0.25rem 0.5rem;
-          background: #f1f5f9;
-          color: #475569;
-          border-radius: 0.25rem;
-          font-size: 0.75rem;
-          text-transform: uppercase;
-        }
-        
-        .history-type.toponym { background: #dbeafe; color: #1e40af; }
-        .history-type.street { background: #dcfce7; color: #166534; }
-        .history-type.house { background: #fef3c7; color: #92400e; }
-        .history-type.locality { background: #e0e7ff; color: #3730a3; }
-        
-        .loader-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 80vh;
-          text-align: center;
-        }
-        
-        .spinner-large {
-          width: 4rem;
-          height: 4rem;
-          border: 4px solid #e2e8f0;
-          border-top: 4px solid #3b82f6;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 2rem;
-        }
-        
-        .hint {
-          color: #94a3b8;
-          font-size: 0.875rem;
-          margin-top: 0.25rem;
-        }
-        
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
+        {/* Выбор нового адреса */}
+        <div className={styles.newAddressSection}>
+          <div 
+            className={`${styles.addressOption} ${useNewAddress ? styles.selected : ''}`}
+            onClick={() => setUseNewAddress(true)}
+          >
+            <div className={styles.radio}>
+              <input
+                type="radio"
+                name="deliveryAddress"
+                checked={useNewAddress}
+                onChange={() => setUseNewAddress(true)}
+              />
+            </div>
+            <span>Использовать новый адрес</span>
+          </div>
+
+          {useNewAddress && (
+            <div className={styles.addressInputWrapper}>
+              <AddressInput
+                onAddressSelect={handleNewAddressSelect}
+                placeholder="Введите новый адрес доставки..."
+                className={styles.addressInput}
+              />
+              {newAddress && (
+                <div className={styles.selectedAddressPreview}>
+                  <p><strong>Выбранный адрес:</strong> {newAddress}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {loadingAddresses && (
+          <div className={styles.loading}>
+            <div className={styles.spinner}></div>
+            <p>Загрузка ваших адресов...</p>
+          </div>
+        )}
+
+        {!loadingAddresses && userAddresses.length === 0 && (
+          <div className={styles.noAddresses}>
+            <p>У вас нет сохраненных адресов. Введите адрес доставки:</p>
+            <AddressInput
+              onAddressSelect={handleNewAddressSelect}
+              placeholder="Введите адрес доставки..."
+              className={styles.addressInput}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Кнопки действий */}
+      <div className={styles.actionButtons}>
+        {!createdOrder ? (
+          <>
+            <button
+              onClick={onCancelOrder}
+              className={styles.cancelButton}
+              disabled={isProcessing}
+            >
+              Отмена
+            </button>
+            <button
+              onClick={handleConfirm}
+              disabled={isProcessing || !selectedAddressText}
+              className={styles.confirmButton}
+            >
+              {isProcessing ? 'Оформляем заказ...' : `Оформить заказ за ${formatPrice(totalWithShipping)}`}
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={onCancelOrder}
+              className={styles.cancelButton}
+              disabled={isProcessingPayment}
+            >
+              Вернуться в корзину
+            </button>
+            <button
+              onClick={handleYandexPayment}
+              disabled={isProcessingPayment}
+              className={styles.paymentButton}
+            >
+              {isProcessingPayment ? 'Подготовка оплаты...' : `Оплатить через Яндекс.Пэй ${formatPrice(totalWithShipping)}`}
+            </button>
+            <div className={styles.orderCreatedInfo}>
+              <p>✅ Заказ #{createdOrder.orderNumber || createdOrder.id} оформлен</p>
+              <p className={styles.hint}>Нажмите "Оплатить" для перехода к оплате</p>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
