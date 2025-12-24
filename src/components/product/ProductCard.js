@@ -15,8 +15,8 @@ const YANDEX_BUCKET_NAME = API_CONFIG.YC_BACKET || 'backet-online-storage';
 export default function ProductCard({ 
   product, 
   onClick,
-  onCartUpdate, // Коллбэк при обновлении корзины
-  size = 'medium' // 'small' | 'medium' | 'large'
+  onCartUpdate,
+  size = 'medium'
 }) {
   const [imageError, setImageError] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
@@ -35,7 +35,6 @@ export default function ProductCard({
 
   if (!product) return null;
 
-  // Получаем первую картинку или заглушку
   const getImageUrl = () => {
     if (!product.productImages || product.productImages.length === 0) {
       return '/notimage.jpeg';
@@ -45,10 +44,7 @@ export default function ProductCard({
     return `${YANDEX_CLOUD_BASE_URL}/${YANDEX_BUCKET_NAME}/${firstImage.imageName}` || '/notimage.jpeg';
   };
 
-  const imageName = getImageUrl();
-
   const handleClick = (e) => {
-    // Проверяем, не кликнули ли по кнопке корзины
     if (e.target.closest(`.${styles.cartButton}`)) {
       return;
     }
@@ -62,34 +58,34 @@ export default function ProductCard({
     e.stopPropagation();
     
     if (!product.isActive) {
-      alert('Товар временно недоступен');
       return;
+    }
+
+    //не добавляем больше, чем есть товара
+    const availableQuantity = product.quantity || 0;
+    const currentInCart = cartQuantity;
+    
+    if (currentInCart >= availableQuantity) {
+      return; //ничего не делаем
     }
 
     try {
       setAddingToCart(true);
       
-      // Добавляем товар в корзину
-      const newCart = addToCart(product.id, 1);
+      addToCart(product.id, 1);
       const newQuantity = getCartItemQuantity(product.id);
       setCartQuantity(newQuantity);
       
-      // Вызываем коллбэк, если передан
       if (onCartUpdate) {
         onCartUpdate({
           productId: product.id,
           quantity: newQuantity,
-          totalItems: getCartItemsCount(),
-          cart: newCart
+          totalItems: getCartItemsCount()
         });
       }
       
-      // Показываем уведомление
-      showNotification('Товар добавлен в корзину');
-      
     } catch (error) {
       console.error('Error adding to cart:', error);
-      showNotification('Ошибка при добавлении в корзину', 'error');
     } finally {
       setAddingToCart(false);
     }
@@ -108,25 +104,6 @@ export default function ProductCard({
     }).format(price);
   };
 
-  // Функция для показа уведомлений
-  const showNotification = (message, type = 'success') => {
-    // Можно использовать toast-библиотеку или создать свой компонент
-    if (typeof window !== 'undefined') {
-      // Временное решение через alert
-      if (type === 'error') {
-        alert(message);
-      }
-      // Или можно использовать браузерное уведомление
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Магазин товаров для животных', {
-          body: message,
-          icon: '/favicon.ico'
-        });
-      }
-    }
-  };
-
-  // Генерация звезд для рейтинга
   const renderStars = () => {
     const stars = [];
     const fullStars = Math.floor(product.rating);
@@ -145,29 +122,28 @@ export default function ProductCard({
     return stars;
   };
 
+  const canAddMore = product.isActive && (product.quantity || 0) > cartQuantity;
+
   return (
     <div 
       className={`${styles.card} ${styles[size]} ${!product.isActive ? styles.inactive : ''}`}
       onClick={handleClick}
     >
-      {/* Бейдж акции */}
       {product.isPromotion && (
         <div className={styles.promotionBadge}>
           Акция
         </div>
       )}
 
-      {/* Индикатор, что товар уже в корзине */}
       {cartQuantity > 0 && (
         <div className={styles.inCartBadge}>
           В корзине: {cartQuantity}
         </div>
       )}
 
-      {/* Контейнер изображения */}
       <div className={styles.imageContainer}>
         <img 
-          src={imageError ? '/notimage.jpeg' : imageName}
+          src={imageError ? '/notimage.jpeg' : getImageUrl()}
           alt={product.name}
           className={styles.image}
           onError={handleImageError}
@@ -181,27 +157,22 @@ export default function ProductCard({
         )}
       </div>
 
-      {/* Контент карточки */}
       <div className={styles.content}>
-        {/* Название */}
         <h3 className={styles.name} title={product.name}>
           {product.name}
         </h3>
 
-        {/* Бренд */}
         {product.brand && (
           <div className={styles.brand}>
             {product.brand}
           </div>
         )}
 
-        {/* Рейтинг */}
         <div className={styles.rating}>
           {renderStars()}
           <span className={styles.ratingValue}>{product.rating?.toFixed(1) || '0.0'}</span>
         </div>
 
-        {/* Цена */}
         <div className={styles.priceSection}>
           <div className={styles.price}>
             {formatPrice(product.price)}
@@ -213,13 +184,12 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Кнопка "В корзину" */}
+        {/*disabled если нельзя добавить больше */}
         {product.isActive && (
           <button 
             className={`${styles.cartButton} ${cartQuantity > 0 ? styles.inCart : ''}`}
             onClick={handleAddToCart}
-            disabled={addingToCart || product.quantity === 0}
-            title={product.quantity === 0 ? "Товар под заказ" : "Добавить в корзину"}
+            disabled={!canAddMore || addingToCart}
           >
             {addingToCart ? (
               <>
@@ -234,7 +204,7 @@ export default function ProductCard({
                 Добавлено ({cartQuantity})
               </>
             ) : product.quantity === 0 ? (
-              'Под заказ'
+              'Товара временно нет'
             ) : (
               <>
                 <svg className={styles.cartIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,14 +216,12 @@ export default function ProductCard({
           </button>
         )}
 
-        {/* Индикатор количества */}
         {product.quantity <= 10 && product.quantity > 0 && (
           <div className={styles.quantityWarning}>
             Осталось: {product.quantity} шт.
           </div>
         )}
 
-        {/* Типы животных (только тэги) */}
         {product.petTypes && product.petTypes.length > 0 && (
           <div className={styles.petTypes}>
             {product.petTypes.slice(0, 2).map((petType, index) => (

@@ -16,14 +16,12 @@ const CartItem = ({
   const [quantity, setQuantity] = useState(initialQuantity);
   const [imageError, setImageError] = useState(false);
   
-  // Получаем URL изображения или заглушку - ТАК ЖЕ КАК В ProductCard
   const getImageUrl = () => {
     if (!product.productImages || product.productImages.length === 0) {
       return '/notimage.jpeg';
     }
     
     const firstImage = product.productImages[0];
-    // Используем imageName или imageUrl в зависимости от того, что есть
     const imageName = firstImage.imageName || firstImage.imageUrl;
     
     if (!imageName) {
@@ -36,6 +34,13 @@ const CartItem = ({
   const imageUrl = getImageUrl();
 
   const handleIncrease = () => {
+    const maxQuantity = product.quantity || 0;
+    
+    //не превышаем доступное количество
+    if (quantity >= maxQuantity) {
+      return; //ничего не делаем
+    }
+    
     const newQuantity = quantity + 1;
     setQuantity(newQuantity);
     if (onQuantityChange) {
@@ -59,7 +64,6 @@ const CartItem = ({
     }
   };
   
-  // Форматируем цену
   const formatPrice = (price) => {
     return new Intl.NumberFormat('ru-RU', {
       style: 'currency',
@@ -72,9 +76,10 @@ const CartItem = ({
     setImageError(true);
   };
 
+  const canIncrease = (product.quantity || 0) > quantity;
+
   return (
     <div className={styles.cartItem}>
-      {/* Контейнер изображения - ТАК ЖЕ КАК В ProductCard */}
       <div className={styles.imageContainer}>
         <img 
           src={imageError ? '/notimage.jpeg' : imageUrl}
@@ -87,6 +92,16 @@ const CartItem = ({
       
       <div className={styles.details}>
         <h3 className={styles.productName}>{product.name}</h3>
+        
+        {/*ИНФА О ДОСТУПНОМ КОЛИЧЕСТВЕ*/}
+        {product.quantity > 0 && (
+          <div className={styles.quantityInfo}>
+            Максимум: {product.quantity} шт.
+            {quantity >= product.quantity && (
+              <span className={styles.maxLimit}> (лимит)</span>
+            )}
+          </div>
+        )}
         
         {product.brand && (
           <div className={styles.brand}>{product.brand}</div>
@@ -116,7 +131,6 @@ const CartItem = ({
             onClick={handleDecrease}
             className={styles.quantityBtn}
             disabled={quantity <= 1}
-            aria-label="Уменьшить количество"
           >
             -
           </button>
@@ -126,7 +140,7 @@ const CartItem = ({
           <button 
             onClick={handleIncrease}
             className={styles.quantityBtn}
-            aria-label="Увеличить количество"
+            disabled={!canIncrease} //блок
           >
             +
           </button>
@@ -135,12 +149,10 @@ const CartItem = ({
             Итого: {formatPrice(product.price * quantity)}
           </div>
 
-          {/* Кнопка удаления */}
           <button 
             onClick={handleRemove}
             className={styles.removeButton}
             title="Удалить из корзины"
-            aria-label="Удалить из корзины"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />

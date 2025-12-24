@@ -295,6 +295,11 @@
 }
 
 /* Статусы */
+.statusPending{
+   background: #bebebe;
+  color: #0f0b0b;
+}
+
 .statusPaid {
   background: #d4edda;
   color: #155724;

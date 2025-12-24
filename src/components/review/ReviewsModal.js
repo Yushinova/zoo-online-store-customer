@@ -196,16 +196,6 @@ const ReviewsModal = ({ productId, productName, onClose }) => {
                   </button>
                 </div>
               )}
-
-              {/* Кнопка написать отзыв */}
-              <div className={styles.writeReviewContainer}>
-                <button 
-                  className={styles.writeReviewButton}
-                  onClick={() => console.log('Написать отзыв')}
-                >
-                  Написать отзыв
-                </button>
-              </div>
             </>
           )}
         </div>

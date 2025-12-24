@@ -1,22 +1,48 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { feedbackService } from '@/api/feedbackService';
-import { useUser } from '@/app/providers/UserProvider'; // ⭐ ИМПОРТИРУЕМ
+import { useUser } from '@/app/providers/UserProvider';
 import styles from './AddReviewModal.module.css';
 
 const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
-  const { user } = useUser(); // ⭐ ПОЛУЧАЕМ ЮЗЕРА ИЗ КОНТЕКСТА
+  const { user } = useUser();
   const [content, setContent] = useState('');
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
+  // ⭐ Проверка существования отзыва
+  const [checking, setChecking] = useState(true);
+  const [hasExistingReview, setHasExistingReview] = useState(false);
+  
   // Валидация
   const [errors, setErrors] = useState({
     content: '',
     rating: ''
   });
+
+  // ⭐ ПРОВЕРЯЕМ ПРИ ОТКРЫТИИ
+  useEffect(() => {
+    const checkReview = async () => {
+      if (!productId || !user) return;
+      
+      try {
+        setChecking(true);
+        const result = await feedbackService.checkUserFeedback(productId);
+        
+        if (result.exists) {
+          setHasExistingReview(true);
+        }
+      } catch (err) {
+        console.error('Ошибка проверки:', err);
+      } finally {
+        setChecking(false);
+      }
+    };
+
+    checkReview();
+  }, [productId, user]);
 
   // Звезды рейтинга
   const renderStars = () => {
@@ -29,10 +55,11 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
           className={`${styles.starButton} ${
             i <= (hoverRating || rating) ? styles.starSelected : styles.starEmpty
           }`}
-          onClick={() => setRating(i)}
-          onMouseEnter={() => setHoverRating(i)}
-          onMouseLeave={() => setHoverRating(0)}
+          onClick={() => !hasExistingReview && setRating(i)}
+          onMouseEnter={() => !hasExistingReview && setHoverRating(i)}
+          onMouseLeave={() => !hasExistingReview && setHoverRating(0)}
           aria-label={`Оценить ${i} звезд${i > 1 ? 'ы' : 'а'}`}
+          disabled={hasExistingReview || loading}
         >
           ★
         </button>
@@ -67,23 +94,26 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // ⭐ ПРОВЕРКА: ЕСЛИ УЖЕ ЕСТЬ ОТЗЫВ - БЛОКИРУЕМ
+    if (hasExistingReview) {
+      setError('Вы уже оставляли отзыв на этот товар');
+      return;
+    }
+    
     if (!validateForm()) {
       return;
     }
 
-    // ⭐ ПРОВЕРЯЕМ user ИЗ КОНТЕКСТА
     if (!user) {
       setError('Для написания отзыва необходимо авторизоваться');
       return;
     }
 
-    // ⭐ НАХОДИМ userId В ОБЪЕКТЕ USER
-    // Проверяем разные возможные поля
+    // Находим userId
     const userId = user.id || user.userId || user.uuid;
     
     if (!userId) {
-      console.error('User object:', user);
-      setError('ID пользователя не найден');
+      setError('Ошибка: не найден ID пользователя');
       return;
     }
 
@@ -94,15 +124,13 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
       const reviewData = {
         content: content.trim(),
         rating,
-        userId: userId, // ⭐ ПЕРЕДАЕМ НАЙДЕННЫЙ userId
+        userId: userId,
         productId
       };
-
-      console.log('Отправка отзыва:', reviewData); // Для отладки
       
       await feedbackService.create(reviewData);
       
-      // Успешно - закрываем модалку и обновляем данные
+      // Успешно
       onReviewAdded && onReviewAdded();
       onClose();
       
@@ -132,12 +160,20 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
 
         <div className={styles.productInfo}>
           <h3 className={styles.productName}>"{productName}"</h3>
-          {/* ⭐ МОЖНО ДОБАВИТЬ ИНФО О ЮЗЕРЕ ДЛЯ ОТЛАДКИ */}
-          {user && (
-            <div className={styles.userInfo}>
-              <small>Пользователь: {user.name || 'Неизвестно'}</small>
+          
+          {/* ⭐ СООБЩЕНИЕ ЕСЛИ УЖЕ ЕСТЬ ОТЗЫВ */}
+          {checking ? (
+            <div className={styles.statusMessage}>
+              <small>Проверяем...</small>
             </div>
-          )}
+          ) : hasExistingReview ? (
+            <div className={`${styles.statusMessage} ${styles.error}`}>
+              <strong>⛔ Вы уже оставляли отзыв на этот товар</strong>
+              <p style={{ fontSize: '14px', marginTop: '5px' }}>
+                Нельзя оставить более одного отзыва на товар
+              </p>
+            </div>
+          ) : null}
         </div>
 
         <form onSubmit={handleSubmit} className={styles.reviewForm}>
@@ -165,11 +201,18 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
             <textarea
               id="content"
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className={`${styles.textarea} ${errors.content ? styles.error : ''}`}
-              placeholder="Поделитесь вашим мнением о товаре..."
+              onChange={(e) => !hasExistingReview && setContent(e.target.value)}
+              className={`${styles.textarea} ${errors.content ? styles.error : ''} ${
+                hasExistingReview ? styles.disabled : ''
+              }`}
+              placeholder={
+                hasExistingReview 
+                  ? "Вы уже оставляли отзыв на этот товар" 
+                  : "Поделитесь вашим мнением о товаре..."
+              }
               rows={6}
               maxLength={1000}
+              disabled={hasExistingReview || loading}
             />
             <div className={styles.charCount}>
               {content.length}/1000 символов
@@ -177,17 +220,6 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
             {errors.content && (
               <p className={styles.errorText}>{errors.content}</p>
             )}
-          </div>
-
-          {/* Советы по написанию отзыва */}
-          <div className={styles.tips}>
-            <p className={styles.tipsTitle}>Советы по написанию хорошего отзыва:</p>
-            <ul className={styles.tipsList}>
-              <li>Расскажите о качестве товара</li>
-              <li>Поделитесь вашим опытом использования</li>
-              <li>Отметьте достоинства и недостатки</li>
-              <li>Будьте объективны и вежливы</li>
-            </ul>
           </div>
 
           {/* Общая ошибка */}
@@ -205,18 +237,20 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
               onClick={onClose}
               disabled={loading}
             >
-              Отмена
+              Закрыть
             </button>
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={loading}
+              disabled={hasExistingReview || loading}
             >
               {loading ? (
                 <>
                   <div className={styles.spinnerSmall}></div>
                   Отправка...
                 </>
+              ) : hasExistingReview ? (
+                'Отзыв уже оставлен'
               ) : (
                 'Отправить отзыв'
               )}

@@ -97,7 +97,7 @@ export default function CheckoutTab({
     const orderData = {
       shippingCost: shippingCost,
       amount: discountedTotal + shippingCost,
-      status: 'New',
+      status: 'pending',
       shippingAddress: selectedAddressText,
       userId: userId,
       orderItems: orderItems
@@ -170,7 +170,7 @@ export default function CheckoutTab({
   // Обработчик успешной оплаты
   const handlePaymentSuccess = (paymentResult) => {
     console.log('Оплата прошла успешно:', paymentResult);
-    createdOrder.status = "Paid";
+    createdOrder.status = "paid";
     const updated = orderService.updateOrderById(createdOrder.id, createdOrder);
     setCreatedOrder(createdOrder);
     // Очищаем корзину

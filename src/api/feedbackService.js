@@ -69,7 +69,38 @@ export class FeedbackService {
       return [];
     }
   }
-  
+
+  //проверка есть ли уже отзыв на данный товар
+  async checkUserFeedback(productId) {
+    try {
+      const res = await fetch(`${this.baseUrl}/check/${productId}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (res.status === 401) {
+        return { exists: false, isAuth: false };
+      }
+
+      if (res.status === 200) {
+        const data = await res.json();
+        
+        // Если есть id - это отзыв, если message - отзыва нет
+        return data.id 
+          ? { exists: true, feedback: data, isAuth: true }
+          : { exists: false, isAuth: true, message: data.message };
+      }
+
+      console.error('Ошибка проверки:', res.status);
+      return { exists: false, isAuth: true };
+
+    } catch (error) {
+      console.error('Ошибка:', error);
+      return { exists: false, isAuth: false };
+    }
+  }
+
   // Метод для создания отзыва
   async create(feedbackData) {
     try {
@@ -110,6 +141,7 @@ export class FeedbackService {
       throw error;
     }
   }
+
   async getTopByProductId(productId, page = 1, pageSize = 5) {
     try {
       console.log(`Загрузка топ отзывов для товара ID: ${productId}, страница: ${page}, размер: ${pageSize}`);
@@ -177,69 +209,7 @@ export class FeedbackService {
     }
   }  
  
-  async checkUserReview(productId) {
-    try {
-      const response = await fetch(
-        `${this.baseUrl}/check/${productId}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include' // ⭐ Токен в куках отправится автоматически
-        }
-      );
-
-      console.log('Response status:', response.status);
-    
-        if (!response.ok) {
-          // Ошибки авторизации и т.д.
-          if (response.status === 401) {
-            console.log('User not authenticated');
-          }
-          setHasExistingReview(false);
-          return;
-        }
-        
-        // ⭐ БЕЗОПАСНЫЙ ПАРСИНГ
-        let data = null;
-        try {
-          const text = await response.text();
-          console.log('Response text:', text);
-          
-          if (text && text.trim() !== '') {
-            data = JSON.parse(text);
-          }
-        } catch (parseError) {
-          console.log('Empty or invalid JSON response');
-        }
-        
-        console.log('Parsed data:', data);
-        
-        // Проверяем что получили
-        if (data && data.id) {
-          // Есть отзыв с ID
-          setHasExistingReview(true);
-          setContent(data.comment || '');
-          setRating(data.rating || 0);
-        } else if (data && data.exists === false) {
-          // Явно указано что отзыва нет
-          setHasExistingReview(false);
-        } else if (data === null || data === undefined) {
-          // Пустой ответ или null
-          setHasExistingReview(false);
-        } else {
-          // Любой другой случай
-          setHasExistingReview(false);
-        }
-    
-      } catch (err) {
-        console.error('Network error:', err);
-        setHasExistingReview(false);
-      } finally {
-        setChecking(false);
-      }
-  }
+  
 }
 
 // Экспортируем экземпляр сервиса

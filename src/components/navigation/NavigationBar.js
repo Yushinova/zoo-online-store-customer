@@ -218,15 +218,6 @@ const NavigationBar = ({ onFilterChange }) => {
                         </li>
                       ))}
                     </ul>
-                    <div className={styles.dropdownFooter}>
-                      <a
-                        href="#"
-                        className={styles.allCategoriesLink}
-                        onClick={(e) => applyPetTypeFilter(item.id, item.name, e)}
-                      >
-                        Все категории {item.name} →
-                      </a>
-                    </div>
                   </div>
                 </div>
               )}

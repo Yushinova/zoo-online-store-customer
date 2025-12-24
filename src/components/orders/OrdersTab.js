@@ -9,7 +9,7 @@ export default function OrdersTab({ userId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
-  const [filter, setFilter] = useState('all'); // all, paid, processing, shipped, delivered, deleted
+  const [filter, setFilter] = useState('all'); // all, pending, paid, processing, shipped, delivered, deleted
 
   // Загрузка заказов пользователя
   useEffect(() => {
@@ -70,27 +70,32 @@ export default function OrdersTab({ userId }) {
   // Получение статуса заказа
   const getStatusInfo = (status) => {
     const statuses = {
-      'Paid': { 
+      'pending': { 
+        text: 'Ожидает оплаты', 
+        className: styles.statusPending,
+        description: 'Заказ ожидает оплаты'
+      },
+      'paid': { 
         text: 'Оплачен', 
         className: styles.statusPaid,
         description: 'Заказ оплачен и ожидает обработки'
       },
-      'Processing': { 
+      'processing': { 
         text: 'В обработке', 
         className: styles.statusProcessing,
         description: 'Заказ формируется и готовится к отправке'
       },
-      'Shipped': { 
+      'shipped': { 
         text: 'Отправлен', 
         className: styles.statusShipped,
         description: 'Заказ отправлен и находится в пути'
       },
-      'Delivered': { 
+      'delivered': { 
         text: 'Доставлен', 
         className: styles.statusDelivered,
         description: 'Заказ успешно доставлен'
       },
-      'Deleted': { 
+      'deleted': { 
         text: 'Удален', 
         className: styles.statusDeleted,
         description: 'Заказ был удален'
@@ -118,11 +123,12 @@ export default function OrdersTab({ userId }) {
   const getOrdersCountByStatus = () => {
     const counts = {
       all: orders.length,
-      Paid: orders.filter(o => o.status === 'Paid').length,
-      Processing: orders.filter(o => o.status === 'Processing').length,
-      Shipped: orders.filter(o => o.status === 'Shipped').length,
-      Delivered: orders.filter(o => o.status === 'Delivered').length,
-      Deleted: orders.filter(o => o.status === 'Deleted').length
+      Pending: orders.filter(o => o.status === 'pending').length,
+      Paid: orders.filter(o => o.status === 'paid').length,
+      Processing: orders.filter(o => o.status === 'processing').length,
+      Shipped: orders.filter(o => o.status === 'shipped').length,
+      Delivered: orders.filter(o => o.status === 'delivered').length,
+      Deleted: orders.filter(o => o.status === 'deleted').length
     };
     return counts;
   };
@@ -177,33 +183,39 @@ export default function OrdersTab({ userId }) {
         >
           Все ({statusCounts.all})
         </button>
+          <button
+          className={`${styles.filterButton} ${filter === 'pending' ? styles.activeFilter : ''}`}
+          onClick={() => setFilter('pending')}
+        >
+          Ожидает оплаты ({statusCounts.Paid})
+        </button>
         <button
-          className={`${styles.filterButton} ${filter === 'Paid' ? styles.activeFilter : ''}`}
-          onClick={() => setFilter('Paid')}
+          className={`${styles.filterButton} ${filter === 'paid' ? styles.activeFilter : ''}`}
+          onClick={() => setFilter('paid')}
         >
           Оплачен ({statusCounts.Paid})
         </button>
         <button
-          className={`${styles.filterButton} ${filter === 'Processing' ? styles.activeFilter : ''}`}
-          onClick={() => setFilter('Processing')}
+          className={`${styles.filterButton} ${filter === 'processing' ? styles.activeFilter : ''}`}
+          onClick={() => setFilter('processing')}
         >
           В обработке ({statusCounts.Processing})
         </button>
         <button
-          className={`${styles.filterButton} ${filter === 'Shipped' ? styles.activeFilter : ''}`}
-          onClick={() => setFilter('Shipped')}
+          className={`${styles.filterButton} ${filter === 'shipped' ? styles.activeFilter : ''}`}
+          onClick={() => setFilter('shipped')}
         >
           Отправлен ({statusCounts.Shipped})
         </button>
         <button
-          className={`${styles.filterButton} ${filter === 'Delivered' ? styles.activeFilter : ''}`}
-          onClick={() => setFilter('Delivered')}
+          className={`${styles.filterButton} ${filter === 'delivered' ? styles.activeFilter : ''}`}
+          onClick={() => setFilter('delivered')}
         >
           Доставлен ({statusCounts.Delivered})
         </button>
         <button
-          className={`${styles.filterButton} ${filter === 'Deleted' ? styles.activeFilter : ''}`}
-          onClick={() => setFilter('Deleted')}
+          className={`${styles.filterButton} ${filter === 'deleted' ? styles.activeFilter : ''}`}
+          onClick={() => setFilter('deleted')}
         >
           Удален ({statusCounts.Deleted})
         </button>

@@ -93,7 +93,7 @@ export default function CheckoutTab({
     const orderData = {
       shippingCost: shippingCost,
       amount: discountedTotal + shippingCost,
-      status: 'Pending',
+      status: 'pending',
       shippingAddress: selectedAddressText,
       userId: userId,
       orderItems: orderItems
