@@ -25,7 +25,7 @@ export default function OrdersTab({ userId }) {
         setOrders(userOrders || []);
       } catch (error) {
         console.error('Ошибка загрузки заказов:', error);
-        setError('Не удалось загрузить заказов. Попробуйте позже.');
+        setError('Не удалось загрузить заказы');
         setOrders([]);
       } finally {
         setLoading(false);
@@ -187,7 +187,7 @@ export default function OrdersTab({ userId }) {
           className={`${styles.filterButton} ${filter === 'pending' ? styles.activeFilter : ''}`}
           onClick={() => setFilter('pending')}
         >
-          Ожидает оплаты ({statusCounts.Paid})
+          Ожидает оплаты ({statusCounts.Pending})
         </button>
         <button
           className={`${styles.filterButton} ${filter === 'paid' ? styles.activeFilter : ''}`}
