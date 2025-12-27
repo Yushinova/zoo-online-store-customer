@@ -6,51 +6,39 @@ export class ProductService {
     this.baseUrl = `${API_CONFIG.BASE_URL}/api/product`;
   }
 
-  //GET /api/product-получить все продукты с фильтрами и пагинацией
   async getAllWithFilterAndPagination(parameters = new ProductQueryParameters()) {
     try {
-      //cтроим query string из параметров
+      //query string из параметров
       const queryParams = new URLSearchParams();
-      
       Object.keys(parameters).forEach(key => {
         if (parameters[key] !== null && parameters[key] !== undefined) {
           queryParams.append(key, parameters[key]);
         }
       });
-
       const url = `${this.baseUrl}?${queryParams.toString()}`;
-      console.log('Fetching products from:', url);
-
       const response = await fetch(url, {
         method: 'GET',
         credentials: 'include'
       });
-
       if (!response.ok) {
         const errorText = await response.text();
         let errorMessage = `HTTP error! status: ${response.status}`;
-        
         try {
           const errorData = JSON.parse(errorText);
           errorMessage = errorData.Message || errorData.message || errorMessage;
         } catch {
           errorMessage = errorText || errorMessage;
         }
-        
         throw new Error(errorMessage);
       }
-
       const products = await response.json();
-      console.log('Products fetched successfully:', products);
       return products;
-
     } catch (error) {
       console.error('Error fetching products:', error);
       throw error;
     }
   }
 
-  //GET /api/product/{id} -получить продукт по ID
   async getByIdWithAllInfo(id) {
     try {
       const response = await fetch(`${this.baseUrl}/${id}`, {

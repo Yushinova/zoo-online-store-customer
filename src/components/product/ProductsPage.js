@@ -21,7 +21,6 @@ export default function ProductsPage({ initialFilters = {} }) {
     filterType: ''
   });
 
-  // Принимаем фильтры из навигации ТОЛЬКО если не первая загрузка
   useEffect(() => {
     if (!isInitialMount.current) {
       setFilters(prev => ({
@@ -31,13 +30,13 @@ export default function ProductsPage({ initialFilters = {} }) {
         categoryName: initialFilters.categoryName ?? '',
         petTypeId: initialFilters.petTypeId ?? '',
         petTypeName: initialFilters.petTypeName ?? '',
-        filterType: initialFilters.filterType?? ''  // Тип фильтра (sales и т.д.)
+        filterType: initialFilters.filterType?? ''
       }));
     }
     isInitialMount.current = false;
   }, [initialFilters]);
 
-  // Функция для генерации заголовка на основе фильтров
+  //функция для генерации заголовка на основе фильтров
   const generateTitle = useMemo(() => {
     if (!filters.isPromotion && 
       !filters.categoryId && 
@@ -53,32 +52,32 @@ export default function ProductsPage({ initialFilters = {} }) {
     
     const parts = [];
     
-    // 1. Тип животного (если есть название)
+    //1-Тип животного
     if (filters.petTypeName) {
       parts.push(filters.petTypeName);
     }
     
-    // 2. Категория (если есть название)
+    //2- Категория
     if (filters.categoryName) {
       parts.push(filters.categoryName);
     }
     
-    // 3. Поиск по названию
+    //3-Поиск по названию
     if (filters.name) {
       parts.push(`поиск: "${filters.name}"`);
     }
     
-    // 4. Бренд
+    //4-Бренд
     if (filters.brand) {
       parts.push(`бренд: ${filters.brand}`);
     }
     
-    // 5. Рейтинг
+    //5-Рейтинг
     if (filters.rating) {
       parts.push(`рейтинг ${filters.rating}+`);
     }
     
-    // 6. Цена
+    //6-Цена
     if (filters.minPrice || filters.maxPrice) {
       const priceRange = [];
       if (filters.minPrice) priceRange.push(`от ${filters.minPrice}₽`);
@@ -86,17 +85,17 @@ export default function ProductsPage({ initialFilters = {} }) {
       parts.push(priceRange.join(' '));
     }
     
-    // 8. Наличие
+    //8-Наличие
     if (filters.isActive !== '' && filters.isActive !== null) {
       parts.push(filters.isActive ? 'в наличии' : 'нет в наличии');
     }
 
-    //9. Из навигации Акции
+    //9-Из навигации Акции
     if(filters.filterType === 'sales' || filters.isPromotion === true){
       parts.push('Акционные товары');
     }
     
-    // Генерация заголовка
+    //генерация заголовка
     if (parts.length > 0) {
       return parts.join(' • ');
     }
@@ -141,8 +140,6 @@ export default function ProductsPage({ initialFilters = {} }) {
             title={generateTitle}
             pageSize={8}
             filters={filters}
-            // Не нужно передавать onProductClick, так как ProductGrid
-            // сам управляет модальным окном
           />
         </main>
       </div>

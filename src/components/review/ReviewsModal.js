@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { feedbackService } from '@/api/feedbackService';
-import styles from './ReviewsModal.module.css'; // Создадим отдельный CSS-модуль
+import styles from './ReviewsModal.module.css';
 
 const ReviewsModal = ({ productId, productName, onClose }) => {
   const [reviews, setReviews] = useState([]);
@@ -12,9 +12,8 @@ const ReviewsModal = ({ productId, productName, onClose }) => {
   const [error, setError] = useState(null);
   const [totalReviews, setTotalReviews] = useState(0);
 
-  const pageSize = 5; // По 5 отзывов на страницу
+  const pageSize = 5; //5 отзывов на страницу
 
-  // Загрузка отзывов
   const loadReviews = async (pageNum = 1, isLoadMore = false) => {
     if (isLoadMore) {
       setLoadingMore(true);
@@ -31,14 +30,12 @@ const ReviewsModal = ({ productId, productName, onClose }) => {
       
       if (pageNum === 1) {
         setReviews(newReviews);
-        // Проверяем, есть ли еще отзывы
         setHasMore(newReviews.length === pageSize);
       } else {
         setReviews(prev => [...prev, ...newReviews]);
         setHasMore(newReviews.length === pageSize);
       }
       
-      // Если загружаем первую страницу, получаем общее количество отзывов
       if (pageNum === 1) {
         const allReviews = await feedbackService.getByProductId(productId);
         setTotalReviews(allReviews.length);
@@ -53,21 +50,18 @@ const ReviewsModal = ({ productId, productName, onClose }) => {
     }
   };
 
-  // Загрузка при открытии
   useEffect(() => {
     if (productId) {
       loadReviews(1);
     }
   }, [productId]);
 
-  // Загрузка следующих отзывов
   const loadMoreReviews = () => {
     const nextPage = page + 1;
     setPage(nextPage);
     loadReviews(nextPage, true);
   };
 
-  // Рендер звезд рейтинга
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -80,7 +74,6 @@ const ReviewsModal = ({ productId, productName, onClose }) => {
     return stars;
   };
 
-  // Форматирование даты
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('ru-RU', {
       day: 'numeric',
@@ -171,13 +164,10 @@ const ReviewsModal = ({ productId, productName, onClose }) => {
                     <p className={styles.reviewContent}>
                       {review.content}
                     </p>
-                    
-                    {/* Можно добавить кнопки "Полезно" и т.д. */}
                   </div>
                 ))}
               </div>
 
-              {/* Кнопка "Загрузить еще" */}
               {hasMore && (
                 <div className={styles.loadMoreContainer}>
                   <button 

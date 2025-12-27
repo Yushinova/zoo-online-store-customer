@@ -14,17 +14,17 @@ const Header = () => {
 
   useEffect(() => {
     setIsMounted(true);
-    // Получаем количество товаров в корзине
+    //получаем количество товаров в корзине
     setCartCount(getCartItemsCount());
     
-    // Слушаем изменения в localStorage для обновления счетчика
+    //изменения в localStorage для обновления счетчика
     const handleStorageChange = () => {
       setCartCount(getCartItemsCount());
     };
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Создаем кастомное событие для обновления корзины
+    //кастомное событие для обновления корзины
     window.addEventListener('cartUpdated', handleStorageChange);
     
     return () => {
@@ -33,19 +33,18 @@ const Header = () => {
     };
   }, []);
 
-  // Также можно обновлять счетчик при каждом рендере
+  //обновлять счетчик при каждом рендере
   useEffect(() => {
     if (isMounted) {
       setCartCount(getCartItemsCount());
     }
   });
 
-  // Берем имя пользователя из контекста
+  //имя пользователя из контекста
   const userName = user?.name;
 
   return (
     <header className={styles.header}>
-      {/* Часть 1: Логотип - 25% */}
       <div className={styles.logoSection}>
         <Link href="/" className={styles.logoLink}>
           <Image
@@ -59,7 +58,6 @@ const Header = () => {
         </Link>
       </div>
 
-      {/* Часть 2: Поиск - 25% */}
       <div className={styles.searchSection}>
         <form className={styles.searchForm}>
           <input
@@ -73,7 +71,6 @@ const Header = () => {
         </form>
       </div>
 
-      {/* Часть 3: Телефон и соцсети - 25% */}
       <div className={styles.contactsSection}>
         <div className={styles.phoneWrapper}>
           <a href="tel:8-800-586-33-22" className={styles.phone}>
@@ -102,7 +99,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Часть 4: Профиль и корзина - 25% */}
       <div className={styles.userSection}>
         <div className={styles.profileWrapper}>
           <Link href={userName ? "/personal" : "/auth"} className={styles.profileLink}>

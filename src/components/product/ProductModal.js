@@ -20,8 +20,8 @@ const ProductModal = ({ productId, onClose, onProductUpdated }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [cartQuantity, setCartQuantity] = useState(0);
-  const [totalReviews, setTotalReviews] = useState(0); // Состояние для общего количества отзывов
-  const [loadingReviews, setLoadingReviews] = useState(false); // Состояние для загрузки отзывов
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [loadingReviews, setLoadingReviews] = useState(false);
   const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
   const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -65,7 +65,6 @@ const ProductModal = ({ productId, onClose, onProductUpdated }) => {
     }
   };
   //рефркш
- // Убедитесь, что refreshProductData возвращает обновленный товар:
 const refreshProductData = async () => {
   if (!productId) return null;
   
@@ -73,7 +72,7 @@ const refreshProductData = async () => {
     setRefreshing(true);
     const updatedProduct = await productService.getByIdWithAllInfo(productId);
     setProduct(updatedProduct);
-    return updatedProduct; // ← ВАЖНО: возвращаем товар
+    return updatedProduct;
   } catch (error) {
     console.error('Ошибка обновления товара:', error);
     return null;
@@ -81,17 +80,15 @@ const refreshProductData = async () => {
     setRefreshing(false);
   }
 };
-// Функция для загрузки общего количества отзывов
+
   const fetchTotalReviews = async (productId) => {
     try {
       setLoadingReviews(true);
-      // Используем существующий метод getByProductId для получения всех отзывов
       const reviews = await feedbackService.getByProductId(productId);
-      // Устанавливаем количество отзывов
       setTotalReviews(reviews.length);
     } catch (error) {
       console.error('Ошибка загрузки отзывов:', error);
-      setTotalReviews(0); // При ошибке показываем 0
+      setTotalReviews(0);
     } finally {
       setLoadingReviews(false);
     }
@@ -115,7 +112,7 @@ const refreshProductData = async () => {
     e.stopPropagation();
   };
 
-  // Добавление в корзину
+  //добавление в корзину
   const handleAddToCart = async (e) => {
     if (e) e.stopPropagation();
     
@@ -127,13 +124,12 @@ const refreshProductData = async () => {
     try {
       setAddingToCart(true);
       
-      // Добавляем товар в корзину
+      //добавляем товар в корзину
       addToCart(product.id, 1);
       
-      // Обновляем локальное состояние
+      //обновляем состояние
       setCartQuantity(getCartItemQuantity(product.id));
       
-      // Показываем уведомление
       showNotification('Товар добавлен в корзину!');
       
     } catch (error) {
@@ -146,14 +142,10 @@ const refreshProductData = async () => {
  
   //новое///
   const handleReviewAdded = () => {
-  console.log('🎯 Отзыв добавлен, обновляем данные товара...');
   
-  // Обновляем данные товара
   refreshProductData().then(updatedProduct => {
     if (updatedProduct) {
-      console.log('✅ Товар обновлен, новый рейтинг:', updatedProduct.rating);
-      
-      // ВАЖНО: Передаем обновленный товар родителю
+      //передаем обновленный товар родителю
       if (onProductUpdated && typeof onProductUpdated === 'function') {
         console.log('📤 Передаем обновленный товар в ProductGrid');
         onProductUpdated(updatedProduct);
@@ -170,17 +162,12 @@ const refreshProductData = async () => {
       return;
     }
 
-    // Добавляем в корзину если еще нет
     if (cartQuantity === 0) {
       addToCart(product.id, 1);
       setCartQuantity(getCartItemQuantity(product.id));
     }
     
-    // Закрываем модальное окно
     handleClose();
-    
-    // Можно сделать переход к оформлению заказа
-    console.log('Переход к оформлению заказа');
   };
 
   const formatPrice = (price) => {
@@ -232,10 +219,8 @@ const refreshProductData = async () => {
 };
 
   const handleWriteReview = () => {
-     const currentUserId = 1; // Нужно реализовать получение userId
+     const currentUserId = 1;
   if (!currentUserId) {
-    // Можно перенаправить на страницу авторизации
-    // или показать уведомление
     showNotification('Для написания отзыва необходимо авторизоваться', 'error');
     return;
   }
@@ -274,7 +259,6 @@ const refreshProductData = async () => {
         ) : product ? (
           <div className={styles.productContent}>
             <div className={styles.productGrid}>
-              {/* Левая колонка - изображения и рейтинг */}
               <div className={styles.leftColumn}>
                 <div className={styles.sliderContainer}>
                   <ImageProductSlider 
@@ -284,7 +268,6 @@ const refreshProductData = async () => {
                   />
                 </div>
 
-                {/* Рейтинг и отзывы под изображением */}
                 <div className={styles.ratingSection}>
                   <div className={styles.ratingHeader}>
                     <h3 className={styles.ratingTitle}>Рейтинг и отзывы</h3>
@@ -336,11 +319,9 @@ const refreshProductData = async () => {
                 </div>
               </div>
 
-              {/* Правая колонка - основная информация */}
               <div className={styles.rightColumn}>
                 <h1 className={styles.productTitle}>{product.name}</h1>
                 
-                {/* Цена и акция */}
                 <div className={styles.priceSection}>
                   <div className={styles.currentPrice}>
                     {formatPrice(product.price)}
@@ -353,7 +334,6 @@ const refreshProductData = async () => {
                   )}
                 </div>
 
-                {/* Наличие */}
                 <div className={styles.stockInfo}>
                   <div className={styles.stockStatusContainer}>
                     <span className={`${styles.stockIndicator} ${
@@ -375,7 +355,6 @@ const refreshProductData = async () => {
                   )}
                 </div>
 
-                {/* Основные характеристики */}
                 <div className={styles.features}>
                   <div className={styles.feature}>
                     <span className={styles.featureLabel}>Бренд:</span>
@@ -395,7 +374,6 @@ const refreshProductData = async () => {
                   </div>
                 </div>
 
-                {/* Типы животных */}
                 {product.petTypes && product.petTypes.length > 0 && (
                   <div className={styles.petTypesSection}>
                     <h3 className={styles.sectionTitle}>Для кого подходит:</h3>
@@ -409,7 +387,6 @@ const refreshProductData = async () => {
                   </div>
                 )}
 
-                {/* Описание */}
                 <div className={styles.descriptionSection}>
                   <h3 className={styles.sectionTitle}>Описание товара</h3>
                   <div className={styles.descriptionText}>
@@ -417,7 +394,6 @@ const refreshProductData = async () => {
                   </div>
                 </div>
 
-                {/* Кнопки действий */}
                 <div className={styles.actionButtons}>
                   <div className={styles.mainActions}>
                     <button 

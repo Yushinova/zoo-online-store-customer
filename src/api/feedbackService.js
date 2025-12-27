@@ -19,20 +19,17 @@ export class FeedbackService {
 
       console.log(`Статус ответа: ${response.status}`);
       
-      // Если статус 204 - нет контента (отзывов нет)
       if (response.status === 204) {
         console.log(`Нет отзывов для товара ${productId}`);
         return [];
       }
       
-      // Если статус 404 - товар не найден или нет отзывов
       if (response.status === 404) {
         console.log(`Товар ${productId} не найден или нет отзывов`);
         return [];
       }
       
       if (!response.ok) {
-        // Пробуем получить текст ошибки
         let errorMessage = `Ошибка HTTP! статус: ${response.status}`;
         try {
           const errorText = await response.text();
@@ -45,17 +42,16 @@ export class FeedbackService {
             }
           }
         } catch {
-          // Если не удалось прочитать текст ошибки
+
         }
         console.error(`Ошибка загрузки отзывов: ${errorMessage}`);
-        // Возвращаем пустой массив вместо выброса ошибки
+        //возвращаем пустой массив вместо выброса ошибки
         return [];
       }
 
       const feedbacks = await response.json();
       console.log(`Отзывы успешно загружены для товара ${productId}:`, feedbacks);
       
-      // Проверяем, что пришел массив
       if (!Array.isArray(feedbacks)) {
         console.warn('Ожидался массив отзывов, но получено:', typeof feedbacks);
         return [];
@@ -65,7 +61,6 @@ export class FeedbackService {
 
     } catch (error) {
       console.error(`Ошибка загрузки отзывов для товара ${productId}:`, error);
-      // Возвращаем пустой массив в случае ошибки
       return [];
     }
   }
@@ -86,7 +81,7 @@ export class FeedbackService {
       if (res.status === 200) {
         const data = await res.json();
         
-        // Если есть id - это отзыв, если message - отзыва нет
+        //если есть id - это отзыв, если message - отзыва нет
         return data.id 
           ? { exists: true, feedback: data, isAuth: true }
           : { exists: false, isAuth: true, message: data.message };
@@ -101,7 +96,6 @@ export class FeedbackService {
     }
   }
 
-  // Метод для создания отзыва
   async create(feedbackData) {
     try {
       const response = await fetch(this.baseUrl, {
@@ -126,7 +120,7 @@ export class FeedbackService {
             }
           }
         } catch {
-          // Если не удалось прочитать текст ошибки
+
         }
         throw new Error(errorMessage);
       }
@@ -146,7 +140,7 @@ export class FeedbackService {
     try {
       console.log(`Загрузка топ отзывов для товара ID: ${productId}, страница: ${page}, размер: ${pageSize}`);
       
-      // Создаем URL с query параметрами
+      //создаем URL с query параметрами
       const url = new URL(`${this.baseUrl}/product/top/${productId}`);
       url.searchParams.append('page', page);
       url.searchParams.append('pageSize', pageSize);
@@ -161,13 +155,11 @@ export class FeedbackService {
 
       console.log(`Статус ответа: ${response.status}`);
       
-      // Если статус 204 - нет контента (отзывов нет)
       if (response.status === 204) {
         console.log(`Нет отзывов для товара ${productId}`);
         return [];
       }
       
-      // Если статус 404 - товар не найден или нет отзывов
       if (response.status === 404) {
         console.log(`Товар ${productId} не найден или нет отзывов`);
         return [];
@@ -186,7 +178,7 @@ export class FeedbackService {
             }
           }
         } catch {
-          // Если не удалось прочитать текст ошибки
+
         }
         console.error(`Ошибка загрузки топ отзывов: ${errorMessage}`);
         return [];
@@ -195,7 +187,6 @@ export class FeedbackService {
       const feedbacks = await response.json();
       console.log(`Топ отзывы успешно загружены для товара ${productId}:`, feedbacks);
       
-      // Проверяем, что пришел массив
       if (!Array.isArray(feedbacks)) {
         console.warn('Ожидался массив отзывов, но получено:', typeof feedbacks);
         return [];
@@ -212,5 +203,4 @@ export class FeedbackService {
   
 }
 
-// Экспортируем экземпляр сервиса
 export const feedbackService = new FeedbackService();

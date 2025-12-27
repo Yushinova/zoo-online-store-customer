@@ -14,9 +14,8 @@ export default function UserAddresses({ userId }) {
   const [manualAddress, setManualAddress] = useState('');
   const [useManualInput, setUseManualInput] = useState(false);
 
-  // Загрузка адресов пользователя
+  //адреса пользователя
   const loadAddresses = useCallback(async () => {
-    // userId должен быть числовым id из UserResponse
     if (!userId) {
       console.error('ID пользователя не указан');
       return;
@@ -38,7 +37,7 @@ export default function UserAddresses({ userId }) {
     loadAddresses();
   }, [loadAddresses]);
 
-  // Обработчик выбора адреса из Yandex Maps
+  //выбор адреса из Yandex Maps
   const handleAddressSelect = (address) => {
     console.log('Выбран адрес из AddressInput:', address);
     
@@ -58,7 +57,6 @@ export default function UserAddresses({ userId }) {
     setUseManualInput(false);
   };
 
-  // Сброс формы
   const resetForm = () => {
     setNewAddress('');
     setManualAddress('');
@@ -67,7 +65,6 @@ export default function UserAddresses({ userId }) {
     setUseManualInput(false);
   };
 
-  // Проверяем, можно ли сохранить адрес
   const canSaveAddress = () => {
     if (useManualInput) {
       return manualAddress && manualAddress.trim().length > 0;
@@ -76,7 +73,7 @@ export default function UserAddresses({ userId }) {
     }
   };
 
-  // Создание нового адреса
+  //новый адрес
   const handleCreateAddress = async () => {
     let addressToSave = '';
     
@@ -91,7 +88,6 @@ export default function UserAddresses({ userId }) {
       return;
     }
 
-    // userId должен быть числовым id
     if (!userId) {
       alert('Ошибка: пользователь не найден');
       return;
@@ -100,10 +96,8 @@ export default function UserAddresses({ userId }) {
     try {
       const addressData = {
         FullAddress: addressToSave,
-        UserId: userId  // Числовой id из UserResponse
+        UserId: userId
       };
-
-      console.log('Отправка адреса на сервер:', addressData);
       
       await addressService.create(addressData);
       alert('Адрес успешно добавлен!');
@@ -115,7 +109,7 @@ export default function UserAddresses({ userId }) {
     }
   };
 
-  // Удаление адреса
+  //удаление
   const handleDeleteAddress = async (addressId) => {
     if (!confirm('Вы уверены, что хотите удалить этот адрес?')) {
       return;
@@ -131,18 +125,17 @@ export default function UserAddresses({ userId }) {
     }
   };
 
-  // Начало добавления нового адреса
+  //добавление нового адреса
   const handleAddNewAddress = () => {
     resetForm();
     setIsAddingNew(true);
   };
 
-  // Отмена добавления
+  //отмена
   const handleCancelAdd = () => {
     resetForm();
   };
 
-  // Переключение на ручной ввод
   const toggleManualInput = () => {
     setUseManualInput(!useManualInput);
     if (!useManualInput) {
@@ -164,7 +157,6 @@ export default function UserAddresses({ userId }) {
 
   return (
     <div className={styles.container}>
-      {/* Заголовок и кнопка добавления */}
       <div className={styles.header}>
         <h3 className={styles.title}>Мои адреса</h3>
         {!isAddingNew && (
@@ -177,7 +169,6 @@ export default function UserAddresses({ userId }) {
         )}
       </div>
 
-      {/* Форма добавления нового адреса */}
       {isAddingNew && (
         <div className={styles.addForm}>
           <div className={styles.formHeader}>
@@ -190,7 +181,7 @@ export default function UserAddresses({ userId }) {
             </button>
           </div>
           
-          {/* Переключатель способа ввода */}
+          {/*переключатель способа ввода*/}
           <div className={styles.inputMethodToggle}>
             <button
               onClick={() => setUseManualInput(false)}
@@ -233,7 +224,7 @@ export default function UserAddresses({ userId }) {
                 rows="3"
               />
               <p className={styles.manualHint}>
-                Пример: г. Москва, ул. Тверская, д. 1, кв. 25
+                Пример: г. Москва, ул. Ленина, д. 1, кв. 25
               </p>
             </div>
           )}
@@ -256,7 +247,6 @@ export default function UserAddresses({ userId }) {
         </div>
       )}
 
-      {/* Список сохраненных адресов */}
       <div className={styles.addressesList}>
         {addresses.length === 0 && !isAddingNew ? (
           <div className={styles.emptyState}>
@@ -288,9 +278,8 @@ export default function UserAddresses({ userId }) {
         )}
       </div>
 
-      {/* Информационное сообщение */}
       <div className={styles.infoMessage}>
-        <p>💡 Выберите адрес из подсказок или введите вручную, затем нажмите "Сохранить адрес"</p>
+        <p>Выберите адрес из подсказок или введите вручную, затем нажмите "Сохранить адрес"</p>
       </div>
     </div>
   );

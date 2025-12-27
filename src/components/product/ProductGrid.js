@@ -18,15 +18,15 @@ export default function ProductGrid({
   const [error, setError] = useState(null);
   //новое/////
 
-  // Для пагинации
+  //для пагинации
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // Для модального окна
+  //для модального окна
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Загрузка товаров
+  //загрузка товаров
   const loadProducts = useCallback(async (page = 1, reset = false) => {
     try {
       if (reset) {
@@ -46,7 +46,6 @@ export default function ProductGrid({
       params.page = page;
       params.pageSize = pageSize;
       
-      // Применяем все переданные фильтры напрямую
       if (filters.isPromotion !== undefined && filters.isPromotion !== null) {
         params.isPromotion = filters.isPromotion;
       }
@@ -143,48 +142,37 @@ export default function ProductGrid({
     }
   }, [pageSize, filters]);
 
-  // При изменении фильтров сбрасываем на первую страницу
+  //при изменении фильтров сбрасываем на первую страницу
   useEffect(() => {
     setCurrentPage(1);
     loadProducts(1, true);
   }, [filters]);
 
-  // Первая загрузка
+  //первая загрузка
   useEffect(() => {
     loadProducts(1, true);
   }, []);
 
-  // Обработчик клика по товару - открытие модального окна
+  //открытие модального окна
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
     
-    // Блокируем скролл фона
     document.body.style.overflow = 'hidden';
   };
 
-  // Обработчик закрытия модального окна
   const handleCloseModal = () => {
      setIsModalOpen(false);
   setSelectedProduct(null);
   document.body.style.overflow = 'unset';
   };
 
-  // Обработчик добавления в корзину (передаем в ProductCard)
-  const handleAddToCart = async (product) => {
-    console.log('Add to cart from grid:', product);
-    // Реализация добавления в корзину
-    // Можно добавить уведомление или обновление счетчика корзины
-  };
-
-  // Коллбэк при обновлении корзины из ProductCard
+  //обновление корзины из ProductCard
   const handleCartUpdate = (cartData) => {
     console.log('Cart updated:', cartData);
-    // Можно обновить счетчик корзины в header
-    // Или показать уведомление
   };
 
-  // Функция применения сортировки
+  //сортировка
   const applySorting = (params, sortOption) => {
     switch(sortOption) {
       case 'price_asc':
@@ -211,7 +199,7 @@ export default function ProductGrid({
     }
   };
 
-  // Загрузка следующей страницы
+  //следующая страница
   const handleLoadMore = () => {
     if (!loadingMore && hasMore) {
       loadProducts(currentPage + 1);
@@ -220,10 +208,8 @@ export default function ProductGrid({
 
   return (
     <div className={styles.container}>
-      {/* Заголовок */}
       {title && <h2 className={styles.title}>{title}</h2>}
 
-      {/* Состояние загрузки */}
       {loading && (
         <div className={styles.loadingContainer}>
           <div className={styles.spinner}></div>
@@ -231,7 +217,6 @@ export default function ProductGrid({
         </div>
       )}
 
-      {/* Сообщение об ошибке */}
       {error && !loading && (
         <div className={styles.errorContainer}>
           <p className={styles.errorMessage}>{error}</p>
@@ -244,7 +229,6 @@ export default function ProductGrid({
         </div>
       )}
 
-      {/* Сообщение, если товаров нет */}
       {!loading && !error && products.length === 0 && (
         <div className={styles.emptyContainer}>
           <p className={styles.emptyMessage}>Товары не найдены</p>
@@ -252,7 +236,6 @@ export default function ProductGrid({
         </div>
       )}
 
-      {/* Сетка товаров */}
       {!loading && !error && products.length > 0 && (
         <>
           <div className={styles.productCount}>
@@ -265,14 +248,13 @@ export default function ProductGrid({
               <ProductCard
                 key={product.id}
                 product={product}
-                onClick={handleProductClick} // Передаем весь объект товара
-                onCartUpdate={handleCartUpdate} // Коллбэк для обновления корзины
+                onClick={handleProductClick} //передаем весь объект товара
+                onCartUpdate={handleCartUpdate} //коллбэк для обновления корзины
                 size="medium"
               />
             ))}
           </div>
           
-          {/* Кнопка "Загрузить еще" */}
           {showLoadMore && hasMore && (
             <div className={styles.loadMoreContainer}>
               <button
@@ -292,7 +274,6 @@ export default function ProductGrid({
             </div>
           )}
           
-          {/* Сообщение, что все товары загружены */}
           {!hasMore && products.length > 0 && (
             <div className={styles.noMoreContainer}>
               <p className={styles.noMoreText}>Все товары загружены</p>
@@ -301,7 +282,7 @@ export default function ProductGrid({
         </>
       )}
 
-      {/* Модальное окно с товаром */}
+      {/*модалка с товаром*/}
       {isModalOpen && selectedProduct && (
         <ProductModal
           productId={selectedProduct.id}

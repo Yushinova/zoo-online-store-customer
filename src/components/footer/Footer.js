@@ -11,11 +11,9 @@ const Footer = () => {
 
   return (
     <>
-      {/* Основной футер - горизонтальный */}
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           
-          {/* Телефон */}
           <div className={styles.footerItem}>
             <div className={styles.itemIcon}>📞</div>
             <div className={styles.itemContent}>
@@ -26,7 +24,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Напишите нам */}
           <div className={styles.footerItem}>
             <div className={styles.itemContent}>
               <Link href="/contact" className={styles.writeUs}>
@@ -36,7 +33,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Соцсети */}
           <div className={styles.footerItem}>
             <div className={styles.itemContent}>
               <div className={styles.socialIcons}>
@@ -74,7 +70,6 @@ const Footer = () => {
 
         </div>
 
-        {/* Копирайт */}
         <div className={styles.copyright}>
           <p>© {currentYear} Зоомагазин "Лучший друг"</p>
           <Link href="/privacy" className={styles.privacyLink}>

@@ -26,7 +26,7 @@ export default function CartPage() {
   const [totalItems, setTotalItems] = useState(0);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
-  // Загружаем данные корзины
+  //данные корзины
   const loadCartData = useCallback(async () => {
     try {
       setLoading(true);
@@ -41,7 +41,7 @@ export default function CartPage() {
         return;
       }
 
-      // Загружаем детали всех товаров в корзине
+      //детали всех товаров в корзине
       const itemsWithDetails = await Promise.all(
         cart.map(async (item) => {
           try {
@@ -104,7 +104,7 @@ export default function CartPage() {
     };
   }, [loadCartData]);
 
-  // Расчет общей суммы
+  //расчет общей суммы
   const calculateTotal = (items) => {
     const total = items.reduce((sum, item) => {
       return sum + (item.product.price * item.quantity);
@@ -112,13 +112,12 @@ export default function CartPage() {
     setTotalAmount(total);
   };
 
-  // Обработчик оформления заказа
+  //оформление заказа
   const handleCheckout = async () => {
     if (userLoading) return;
     
     if (!user) {
-      // Пользователь не авторизован - перенаправляем на страницу входа
-      // Можно сохранить текущий URL для возврата после авторизации
+      //перенаправляем на страницу входа
       const returnUrl = encodeURIComponent('/cart');
       router.push(`/auth`);
       return;
@@ -131,7 +130,7 @@ export default function CartPage() {
 
     setCheckoutLoading(true);
     try {
-      // Подготавливаем данные для передачи
+      //данные для передачи
       const checkoutData = {
         items: cartItems.map(item => ({
           productId: item.productId,
@@ -148,13 +147,10 @@ export default function CartPage() {
         timestamp: new Date().toISOString()
       };
 
-      // Сохраняем данные в sessionStorage для передачи на следующую страницу
+      //сохраняем данные в sessionStorage для передачи на следующую страницу
       sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
 
-      // Альтернативно, можно использовать параметры URL для небольших данных
-      // const queryString = `?items=${encodeURIComponent(JSON.stringify(checkoutData.items))}&total=${totalAmount}`;
-      
-      // Переходим на страницу оформления заказа
+      //на страницу оформления заказа
       router.push('/personal');
 
     } catch (error) {
@@ -165,7 +161,7 @@ export default function CartPage() {
     }
   };
 
-  // Обработчик изменения количества
+  //изменение количества
   const handleQuantityChange = async (productId, newQuantity) => {
     try {
       updateCartItemQuantity(productId, newQuantity);
@@ -196,7 +192,7 @@ export default function CartPage() {
     }
   };
 
-  // Удаление товара из корзины
+  //удаление товара из корзины
   const handleRemoveItem = (productId) => {
     if (confirm('Удалить товар из корзины?')) {
       removeFromCart(productId);
@@ -212,7 +208,7 @@ export default function CartPage() {
     }
   };
 
-  // Очистка корзины
+  //очистка корзины
   const handleClearCart = () => {
     if (confirm('Очистить всю корзину?')) {
       clearCart();
@@ -223,7 +219,7 @@ export default function CartPage() {
     }
   };
 
-  // Форматирование цены
+  //формат цены
   const formatPrice = (price) => {
     return new Intl.NumberFormat('ru-RU', {
       style: 'currency',
@@ -233,7 +229,6 @@ export default function CartPage() {
     }).format(price);
   };
 
-  // Отображаем текст кнопки в зависимости от состояния
   const getCheckoutButtonText = () => {
     if (checkoutLoading) return 'Загрузка...';
     if (!user) return 'Войти для оформления';
@@ -288,7 +283,7 @@ export default function CartPage() {
       ) : (
         <>
           <div className={styles.cartContent}>
-            {/* Список товаров */}
+            {/*список товаров*/}
             <div className={styles.itemsList}>
               {cartItems.map((item) => (
                 <CartItem
@@ -303,7 +298,7 @@ export default function CartPage() {
               ))}
             </div>
 
-            {/* Боковая панель с итогами */}
+            {/*итоги*/}
             <div className={styles.sidebar}>
               <div className={styles.summary}>
                 <h3>Ваш заказ</h3>
@@ -356,7 +351,6 @@ export default function CartPage() {
             </div>
           </div>
 
-          {/* Мобильная версия итогов */}
           <div className={styles.mobileSummary}>
             <div className={styles.mobileTotal}>
               <span>Итого: {formatPrice(totalAmount)}</span>

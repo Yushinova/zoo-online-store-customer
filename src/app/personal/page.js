@@ -28,20 +28,20 @@ export default function PersonalPage() {
   const [ymapsLoading, setYmapsLoading] = useState(true);
   const [ymapsError, setYmapsError] = useState(null);
 
-  // Загружаем Yandex Maps API
+  // Yandex Maps API
   useEffect(() => {
     if (window.ymaps3) {
-      console.log('✅ ymaps3 уже загружен');
+      console.log('ymaps3 уже загружен');
       setYmaps3(window.ymaps3);
       setYmapsLoading(false);
       return;
     }
 
-    console.log('🔄 Загружаем ymaps3...');
+    console.log('Загружаем ymaps3...');
     
-    // Проверяем, не загружается ли уже скрипт
+    //не загружается ли уже скрипт
     if (document.getElementById('yandex-maps-api')) {
-      console.log('📦 Скрипт уже загружается...');
+      console.log('Скрипт уже загружается...');
       return;
     }
 
@@ -51,16 +51,16 @@ export default function PersonalPage() {
     script.async = true;
     
     script.onload = () => {
-      console.log('✅ Скрипт ymaps3 загружен');
+      console.log('Скрипт ymaps3 загружен');
       
-      // Проверяем доступность suggest через небольшой таймаут
+      //доступность suggest через небольшой таймаут
       setTimeout(() => {
         if (window.ymaps3?.suggest) {
-          console.log('✅ ymaps3.suggest доступен');
+          console.log('ymaps3.suggest доступен');
           setYmaps3(window.ymaps3);
           setYmapsLoading(false);
         } else {
-          console.error('❌ ymaps3.suggest не найден');
+          console.error('ymaps3.suggest не найден');
           setYmapsError('Сервис подсказок недоступен');
           setYmapsLoading(false);
         }
@@ -68,14 +68,13 @@ export default function PersonalPage() {
     };
     
     script.onerror = (error) => {
-      console.error('❌ Ошибка загрузки ymaps3:', error);
+      console.error('Ошибка загрузки ymaps3:', error);
       setYmapsError('Не удалось загрузить карты');
       setYmapsLoading(false);
     };
 
     document.head.appendChild(script);
 
-    // Очистка при размонтировании
     return () => {
       const existingScript = document.getElementById('yandex-maps-api');
       if (existingScript) {
@@ -85,13 +84,13 @@ export default function PersonalPage() {
   }, []);
 
   useEffect(() => {
-    // Проверяем авторизацию
+    //проверяем авторизацию
     if (!loading && !user) {
       router.push('/login?returnUrl=/personal');
       return;
     }
 
-    // Загружаем данные пользователя
+    //данные пользователя
     if (user) {
       setUserData({
         id: user.id,
@@ -103,7 +102,7 @@ export default function PersonalPage() {
       });
     }
 
-    // Получаем данные из sessionStorage
+    //получаем данные из sessionStorage
     const savedData = sessionStorage.getItem('checkoutData');
     if (savedData) {
       try {
@@ -123,15 +122,11 @@ export default function PersonalPage() {
       try {
         console.log('Подтверждение заказа с данными:', orderData);
         
-        // Очищаем данные после успешного оформления
         sessionStorage.removeItem('checkoutData');
         setCheckoutData(null);
         
-        // Переключаем на вкладку заказов
+        //переход на вкладку заказов
         setActiveTab('orders');
-        
-        // Можно показать уведомление или редирект
-        // alert('Заказ успешно оформлен!');
         
         } catch (error) {
             console.error('Ошибка при оформлении заказа:', error);
@@ -145,7 +140,7 @@ export default function PersonalPage() {
         if (confirm('Отменить оформление заказа и вернуться в корзину?')) {
             sessionStorage.removeItem('checkoutData');
             setCheckoutData(null);
-            router.push('/cart'); // Переход на страницу корзины
+            router.push('/cart'); //на страницу корзины
         }
   };
 
@@ -170,7 +165,6 @@ export default function PersonalPage() {
 
   return (
     <div className={styles.container}>
-      {/* Хедер с информацией пользователя */}
       <header className={styles.header}>
         <div className={styles.userInfo}>
           <div className={styles.avatar}>
@@ -206,7 +200,7 @@ export default function PersonalPage() {
        </div>
       </header>
 
-      {/* Навигационные вкладки */}
+      {/*навигационные вкладки */}
       <nav className={styles.tabs}>
         <button
           className={`${styles.tab} ${activeTab === 'profile' ? styles.activeTab : ''}`}
@@ -237,9 +231,7 @@ export default function PersonalPage() {
         )}
       </nav>
 
-      {/* Содержимое вкладок */}
       <main className={styles.content}>
-        {/* Вкладка "Профиль" */}
         {activeTab === 'profile' && (
           <div className={styles.tabContent}>
             <h3 className={styles.tabTitle}>Личные данные</h3>
@@ -299,13 +291,13 @@ export default function PersonalPage() {
             </div>
           </div>
         )}
-        {/*Orders*/}
+
         {activeTab === 'orders' && user && (
         <div className={styles.tabContent}>
             <OrdersTab userId={user.id} />
         </div>
         )}
-        {/* Вкладка "Адрес доставки" */}
+
         {activeTab === 'address' && (
         <div className={styles.tabContent}>
             <h3 className={styles.tabTitle}>Адрес доставки</h3>
@@ -315,19 +307,16 @@ export default function PersonalPage() {
                 Управляйте вашими сохраненными адресами доставки
             </p>
             
-            {/* Передаем числовой id, а не uuid */}
             {user && user.id && (
                 <UserAddresses userId={user.id} />
             )}
             
-            {/* Если у юзера нет id (например, еще не загрузился) */}
             {user && !user.id && (
                 <div className={styles.errorMessage}>
                 Не удалось загрузить ID пользователя. Пожалуйста, обновите страницу.
                 </div>
             )}
             
-            {/* Блок с инструкцией для оформления заказа */}
             <div className={styles.deliveryInstructions}>
                 <h4>Как использовать адреса при оформлении заказа:</h4>
                 <ul className={styles.instructionsList}>
@@ -341,8 +330,6 @@ export default function PersonalPage() {
         </div>
         )}
 
-       
-        {/* Вкладка "Оформление заказа" */}
         {activeTab === 'checkout' && checkoutData && user && (
         <div className={styles.tabContent}>
             <CheckoutTab

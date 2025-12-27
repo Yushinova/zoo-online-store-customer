@@ -7,7 +7,7 @@ const ImageProductSlider = ({ images, className = '', isModal = false }) => {
   const URL_IMAGE = `${API_CONFIG.YC_URL}/${API_CONFIG.YC_BACKET}`;
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  // Если нет картинок или пустой массив, показываем заглушку
+  //если нет картинок или пустой массив ставим заглушку
   if (!images || images.length === 0) {
     return (
       <div className={`${styles.container} ${className} ${isModal ? styles.modalSize : ''}`}>
@@ -25,7 +25,7 @@ const ImageProductSlider = ({ images, className = '', isModal = false }) => {
   
   const currentImage = images[currentIndex];
   
-  // Следующее изображение
+  //след
   const nextImage = (e) => {
     if (e) e.stopPropagation();
     setCurrentIndex(prevIndex => 
@@ -33,7 +33,7 @@ const ImageProductSlider = ({ images, className = '', isModal = false }) => {
     );
   };
   
-  // Предыдущее изображение
+  //пред
   const prevImage = (e) => {
     if (e) e.stopPropagation();
     setCurrentIndex(prevIndex => 
@@ -41,24 +41,22 @@ const ImageProductSlider = ({ images, className = '', isModal = false }) => {
     );
   };
   
-  // Переход к конкретному изображению
+  //переход к конкретному изображению
   const goToImage = (index, e) => {
     if (e) e.stopPropagation();
     setCurrentIndex(index);
   };
   
-  // Обработка ошибки загрузки изображения
+  //ошибка загрузки изображения
   const handleImageError = (e) => {
     console.error('Ошибка загрузки изображения:', e.target.src);
     e.target.src = '/notimage.jpeg';
-    e.target.onerror = null; // Предотвращаем бесконечный цикл
+    e.target.onerror = null;
   };
   
   return (
     <div className={`${styles.container} ${className} ${isModal ? styles.modalSize : ''}`}>
-      {/* Контейнер слайдера */}
       <div className={styles.sliderWrapper}>
-        {/* Основное изображение */}
         <img 
           src={`${URL_IMAGE}/${currentImage.imageName}`}
           alt={currentImage.altText || `Изображение ${currentIndex + 1}`}
@@ -67,7 +65,6 @@ const ImageProductSlider = ({ images, className = '', isModal = false }) => {
           loading="lazy"
         />
         
-        {/* Кнопки навигации (если больше 1 изображения) */}
         {images.length > 1 && (
           <>
             <button 
@@ -92,7 +89,6 @@ const ImageProductSlider = ({ images, className = '', isModal = false }) => {
           </>
         )}
         
-        {/* Счетчик (если больше 1 изображения) */}
         {images.length > 1 && (
           <div className={styles.counter}>
             <span className={styles.counterCurrent}>{currentIndex + 1}</span>
@@ -102,7 +98,6 @@ const ImageProductSlider = ({ images, className = '', isModal = false }) => {
         )}
       </div>
       
-      {/* Индикаторы в виде точек (если больше 1 изображения) */}
       {images.length > 1 && (
         <div className={styles.dots}>
           {images.map((_, index) => (

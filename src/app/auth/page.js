@@ -9,11 +9,11 @@ export default function AuthPage() {
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // Проверяем, авторизован ли пользователь
+  //вторизован ли пользователь
   useEffect(() => {
     const checkAuth = () => {
       if (userService.currentUser) {
-        // Если пользователь уже авторизован, перенаправляем на главную
+        //если пользователь уже авторизован, перенаправляем на главную
         router.push('/');
       }
       setIsCheckingAuth(false);
@@ -24,7 +24,6 @@ export default function AuthPage() {
 
   const handleAuthSuccess = (userData) => {
     console.log('Auth successful:', userData);
-    // Перенаправляем на главную страницу или dashboard
     router.push('/');
   };
 

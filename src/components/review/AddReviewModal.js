@@ -12,17 +12,15 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // ⭐ Проверка существования отзыва
+  //пПроверка существования отзыва
   const [checking, setChecking] = useState(true);
   const [hasExistingReview, setHasExistingReview] = useState(false);
   
-  // Валидация
   const [errors, setErrors] = useState({
     content: '',
     rating: ''
   });
 
-  // ⭐ ПРОВЕРЯЕМ ПРИ ОТКРЫТИИ
   useEffect(() => {
     const checkReview = async () => {
       if (!productId || !user) return;
@@ -44,7 +42,7 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
     checkReview();
   }, [productId, user]);
 
-  // Звезды рейтинга
+  //звезды рейтинга
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -68,7 +66,6 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
     return stars;
   };
 
-  // Валидация формы
   const validateForm = () => {
     const newErrors = { content: '', rating: '' };
     let isValid = true;
@@ -90,11 +87,9 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
     return isValid;
   };
 
-  // Отправка отзыва
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // ⭐ ПРОВЕРКА: ЕСЛИ УЖЕ ЕСТЬ ОТЗЫВ - БЛОКИРУЕМ
     if (hasExistingReview) {
       setError('Вы уже оставляли отзыв на этот товар');
       return;
@@ -109,8 +104,7 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
       return;
     }
 
-    // Находим userId
-    const userId = user.id || user.userId || user.uuid;
+    const userId = user.id || user.userId;
     
     if (!userId) {
       setError('Ошибка: не найден ID пользователя');
@@ -130,7 +124,7 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
       
       await feedbackService.create(reviewData);
       
-      // Успешно
+      //успешно
       onReviewAdded && onReviewAdded();
       onClose();
       
@@ -161,7 +155,6 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
         <div className={styles.productInfo}>
           <h3 className={styles.productName}>"{productName}"</h3>
           
-          {/* ⭐ СООБЩЕНИЕ ЕСЛИ УЖЕ ЕСТЬ ОТЗЫВ */}
           {checking ? (
             <div className={styles.statusMessage}>
               <small>Проверяем...</small>
@@ -177,7 +170,6 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
         </div>
 
         <form onSubmit={handleSubmit} className={styles.reviewForm}>
-          {/* Поле рейтинга */}
           <div className={styles.formGroup}>
             <label className={styles.formLabel}>Ваша оценка</label>
             <div className={styles.ratingContainer}>
@@ -193,7 +185,6 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
             )}
           </div>
 
-          {/* Поле отзыва */}
           <div className={styles.formGroup}>
             <label htmlFor="content" className={styles.formLabel}>
               Ваш отзыв
@@ -222,14 +213,12 @@ const AddReviewModal = ({ productId, productName, onClose, onReviewAdded }) => {
             )}
           </div>
 
-          {/* Общая ошибка */}
           {error && (
             <div className={styles.errorContainer}>
               <p className={styles.errorText}>{error}</p>
             </div>
           )}
 
-          {/* Кнопки */}
           <div className={styles.formActions}>
             <button
               type="button"

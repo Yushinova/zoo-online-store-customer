@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { userService } from '@/api/userService';
 import { authService } from '@/api/authService';
 import { UserRequest, UserLogin } from '@/models/user';
-import { useUser } from '@/app/providers/UserProvider'; // ⭐ Импортируем
+import { useUser } from '@/app/providers/UserProvider';
 import styles from './AuthForm.module.css';
 
 const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
@@ -12,10 +12,9 @@ const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
   
-  // ⭐ Получаем login из вашего UserProvider
+  //получаем login из UserProvider
   const { login } = useUser();
   
-  // Данные формы
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -25,7 +24,6 @@ const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
   
   const [errors, setErrors] = useState({});
 
-  // Обработка изменения полей (ваш существующий код)
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -59,7 +57,6 @@ const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
     }
   };
 
-  // Валидация (ваш существующий код)
   const validateForm = () => {
     const newErrors = {};
     const phonePattern = /^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$/;
@@ -92,7 +89,6 @@ const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ⭐ ИСПРАВЛЕННАЯ ОБРАБОТКА ОТПРАВКИ
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAuthError('');
@@ -107,7 +103,7 @@ const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
       let apiKey;
       
       if (mode === 'register') {
-        // 1. Регистрация
+        // 1 Регистрация
         const userRequest = new UserRequest();
         Object.assign(userRequest, {
           name: formData.name,
@@ -121,7 +117,7 @@ const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
         console.log('apiKey:', apiKey);
         
       } else {
-        // 2. Логин
+        // 2 Логин
         const userLogin = new UserLogin();
         Object.assign(userLogin, {
           phone: formData.phone,
@@ -133,23 +129,16 @@ const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
         console.log('apiKey:', apiKey);
       }
       
-      // ⭐ 3. Получаем токен (устанавливает куки)
-      console.log('Получение токена...');
+      // получаем токен (устанавливает куки)
       await authService.getTokenByApiKey(apiKey);
       
-      // ⭐ 4. Логиним пользователя через UserProvider
-      // Ваш login() принимает только apiKey, не userData!
-      console.log('Сохранение в UserProvider...');
-      await login(apiKey); // ⭐ Это вызовет loadUser внутри UserProvider
-      
-      // ⭐ 5. Успех - можно сделать редирект
-      console.log('Успешно!');
+      await login(apiKey); //loadUser внутри UserProvider
       
       if (onSuccess) {
-        onSuccess(); // Или передайте что-то если нужно
+        onSuccess();
       }
       
-      // Автоматический редирект на главную
+      //редирект на главную
       setTimeout(() => {
         window.location.href = '/';
       }, 500);
@@ -162,7 +151,7 @@ const AuthForm = ({ onSuccess, initialMode = 'login' }) => {
     }
   };
 
-  // Переключение между логином и регистрацией
+  //переключалка между логином и регистрацией
   const toggleMode = () => {
     setMode(prev => prev === 'login' ? 'register' : 'login');
     setAuthError('');

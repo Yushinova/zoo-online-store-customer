@@ -18,20 +18,17 @@ export class OrderService {
 
       console.log(`Статус ответа: ${response.status}`);
       
-      // Если статус 204 - нет контента (заказов нет)
       if (response.status === 204) {
         console.log(`Нет заказов для юзера ${userId}`);
         return [];
       }
       
-      // Если статус 404 - юзер не найден или нет заказов
       if (response.status === 404) {
         console.log(`юзер ${userId} не найден или нет заказов`);
         return [];
       }
       
       if (!response.ok) {
-        // Пробуем получить текст ошибки
         let errorMessage = `Ошибка HTTP! статус: ${response.status}`;
         try {
           const errorText = await response.text();
@@ -44,17 +41,15 @@ export class OrderService {
             }
           }
         } catch {
-          // Если не удалось прочитать текст ошибки
+
         }
         console.error(`Ошибка загрузки отзывов: ${errorMessage}`);
-        // Возвращаем пустой массив вместо выброса ошибки
         return [];
       }
 
       const orders = await response.json();
       console.log(`заказы успешно загружены для юзера ${userId}:`, orders);
       
-      // Проверяем, что пришел массив
       if (!Array.isArray(orders)) {
         console.warn('Ожидался массив заказов, но получено:', typeof orders);
         return [];
@@ -64,12 +59,10 @@ export class OrderService {
 
     } catch (error) {
       console.error(`Ошибка загрузки заказов для юзера ${userId}:`, error);
-      // Возвращаем пустой массив в случае ошибки
       return [];
     }
   }
-  
-  // Метод для создания заказа
+
   async create(orderData) {
     try {
       const response = await fetch(`${this.baseUrl}${API_CONFIG.ORDERS.CREATE}`, {
@@ -94,7 +87,7 @@ export class OrderService {
             }
           }
         } catch {
-          // Если не удалось прочитать текст ошибки
+
         }
         throw new Error(errorMessage);
       }
@@ -109,7 +102,7 @@ export class OrderService {
       throw error;
     }
   }
-   //обновить заказ по id
+  
   async updateOrderById(orderId, updateData) {
     try {
 

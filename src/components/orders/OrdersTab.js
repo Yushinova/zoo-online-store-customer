@@ -11,7 +11,7 @@ export default function OrdersTab({ userId }) {
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [filter, setFilter] = useState('all'); // all, pending, paid, processing, shipped, delivered, deleted
 
-  // Загрузка заказов пользователя
+  //заказы пользователя
   useEffect(() => {
     if (!userId) return;
 
@@ -35,13 +35,12 @@ export default function OrdersTab({ userId }) {
     loadOrders();
   }, [userId]);
 
-  // Фильтрация заказов по статусу
+  //фильтры заказов по статусу
   const filteredOrders = orders.filter(order => {
     if (filter === 'all') return true;
     return order.status === filter;
   });
 
-  // Форматирование даты
   const formatDate = (dateString) => {
     if (!dateString) return '—';
     try {
@@ -58,7 +57,6 @@ export default function OrdersTab({ userId }) {
     }
   };
 
-  // Форматирование цены
   const formatPrice = (price) => {
     return new Intl.NumberFormat('ru-RU', {
       style: 'currency',
@@ -67,7 +65,6 @@ export default function OrdersTab({ userId }) {
     }).format(price);
   };
 
-  // Получение статуса заказа
   const getStatusInfo = (status) => {
     const statuses = {
       'pending': { 
@@ -109,17 +106,17 @@ export default function OrdersTab({ userId }) {
     };
   };
 
-  // Переключение деталей заказа
+  //переключение деталей заказа
   const toggleOrderDetails = (orderId) => {
     setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
   };
 
-  // Общая сумма заказа
+  //общая сумма заказа
   const calculateOrderTotal = (order) => {
     return order.amount + (order.shippingCost || 0);
   };
 
-  // Количество заказов по статусам
+  //количество заказов по статусам
   const getOrdersCountByStatus = () => {
     const counts = {
       all: orders.length,
@@ -175,7 +172,6 @@ export default function OrdersTab({ userId }) {
     <div className={styles.container}>
       <h3 className={styles.title}>Мои заказы</h3>
       
-      {/* Фильтры по статусам */}
       <div className={styles.filters}>
         <button
           className={`${styles.filterButton} ${filter === 'all' ? styles.activeFilter : ''}`}
@@ -234,7 +230,6 @@ export default function OrdersTab({ userId }) {
 
             return (
               <div key={order.id} className={styles.orderCard}>
-                {/* Заголовок заказа */}
                 <div 
                   className={styles.orderHeader}
                   onClick={() => toggleOrderDetails(order.id)}
@@ -275,15 +270,12 @@ export default function OrdersTab({ userId }) {
                   </div>
                 </div>
 
-                {/* Детали заказа (раскрывающиеся) */}
                 {isExpanded && (
                   <div className={styles.orderDetails}>
-                    {/* Статус заказа с описанием */}
                     <div className={styles.statusDescription}>
                       <strong>Статус:</strong> {statusInfo.description}
                     </div>
 
-                    {/* Информация о покупателе */}
                     <div className={styles.detailsSection}>
                       <h5>Информация о покупателе:</h5>
                       <div className={styles.detailsGrid}>
@@ -302,7 +294,7 @@ export default function OrdersTab({ userId }) {
                       </div>
                     </div>
 
-                    {/* Состав заказа */}
+                    {/*состав*/}
                     <div className={styles.detailsSection}>
                       <h5>Состав заказа:</h5>
                       <div className={styles.orderItems}>
@@ -328,7 +320,7 @@ export default function OrdersTab({ userId }) {
                       </div>
                     </div>
 
-                    {/* Итоговая сумма */}
+                    {/*итого*/}
                     <div className={styles.detailsSection}>
                       <div className={styles.orderSummary}>
                         <div className={styles.summaryRow}>
@@ -348,7 +340,6 @@ export default function OrdersTab({ userId }) {
                       </div>
                     </div>
 
-                    {/* Дополнительные действия */}
                     {order.status !== 'Deleted' && order.status !== 'Delivered' && (
                       <div className={styles.orderActions}>
                         {order.status === 'Paid' && (

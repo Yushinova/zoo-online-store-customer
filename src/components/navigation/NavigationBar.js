@@ -60,7 +60,7 @@ const NavigationBar = ({ onFilterChange }) => {
     setHoveredPetType(null);
   };
 
-  // Применение фильтра по типу животного
+  //фильтры по типу животного
   const applyPetTypeFilter = (petTypeId, petTypeName, e) => {
     e.preventDefault();
     const filters = {
@@ -76,7 +76,7 @@ const NavigationBar = ({ onFilterChange }) => {
     onFilterChange(filters);
   };
 
-  // Применение фильтра по акциям
+  //фильтры по акциям
   const applySalesFilter = (e) => {
     e.preventDefault();
     const filters = {
@@ -92,7 +92,7 @@ const NavigationBar = ({ onFilterChange }) => {
     onFilterChange(filters);
   };
 
-  // Применение фильтра по категории
+  //фильтры по категориям
   const applyCategoryFilter = (petTypeId, petTypeName, categoryId, categoryName, e) => {
     e.preventDefault();
     const filters = {
@@ -171,7 +171,7 @@ const NavigationBar = ({ onFilterChange }) => {
                       alt={item.name}
                       className={styles.petTypeImage}
                       onError={(e) => {
-                        // Обработка ошибки загрузки изображения
+                        //ошибка загрузки изображения
                         e.target.style.display = 'none';
                       }}
                     />
@@ -183,7 +183,6 @@ const NavigationBar = ({ onFilterChange }) => {
                 </span>
               </a>
               
-              {/* Выпадающее меню с категориями */}
               {!item.isSpecial && hoveredPetType === item.id && item.categories.length > 0 && (
                 <div className={styles.dropdownMenu}>
                   <div className={styles.dropdownContent}>

@@ -26,7 +26,6 @@ export default function CheckoutTab({
   const [createdOrder, setCreatedOrder] = useState(null);
   const [showMockPayment, setShowMockPayment] = useState(false);
 
-  // Загружаем сохраненные адреса пользователя
   useEffect(() => {
     if (!userId) return;
 
@@ -36,7 +35,7 @@ export default function CheckoutTab({
         const addresses = await addressService.getByUserId(userId);
         setUserAddresses(addresses || []);
         
-        // Если есть адреса, выбираем первый по умолчанию
+        //если есть адреса, выбираем первый по умолчанию
         if (addresses && addresses.length > 0) {
           setSelectedAddressId(addresses[0].id);
           setSelectedAddressText(addresses[0].fullAddress);
@@ -51,7 +50,6 @@ export default function CheckoutTab({
     loadAddresses();
   }, [userId]);
 
-  // Форматирование цены
   const formatPrice = (price) => {
     return new Intl.NumberFormat('ru-RU', {
       style: 'currency',
@@ -60,7 +58,6 @@ export default function CheckoutTab({
     }).format(price);
   };
 
-  // Расчет скидки
   const calculateDiscountedPrice = (total) => {
     if (userData.discont > 0) {
       const discount = total * (userData.discont / 100);
@@ -77,23 +74,21 @@ export default function CheckoutTab({
     };
   };
 
-  // Подготовка данных для OrderRequest
   const prepareOrderData = () => {
     const discountedTotal = userData.discont > 0 
       ? calculateDiscountedPrice(checkoutData.totalAmount).discounted 
       : checkoutData.totalAmount;
 
-    // Подготовка orderItems
     const orderItems = checkoutData.items.map(item => ({
       quantity: item.quantity,
       unitPrice: item.product.price,
       price: item.product.price * item.quantity,
       ProductName: item.product.name,
       productId: item.product.id || 0,
-      orderId: 0 // Бэк заполнит
+      orderId: 0 //бэк заполнит
     }));
 
-    // Данные заказа в соответствии с OrderRequest
+    //TODO: импоритроват OrderRequest!!!!
     const orderData = {
       shippingCost: shippingCost,
       amount: discountedTotal + shippingCost,
@@ -106,7 +101,7 @@ export default function CheckoutTab({
     return orderData;
   };
 
-  // Обработчик выбора адреса
+  //обработчик выбора адреса
   const handleAddressSelect = (addressId, addressText) => {
     setSelectedAddressId(addressId);
     setSelectedAddressText(addressText);
@@ -114,7 +109,7 @@ export default function CheckoutTab({
     calculateShippingCost(addressText);
   };
 
-  // Обработчик выбора нового адреса
+  //выбор нового адреса
   const handleNewAddressSelect = (address) => {
     const addressText = address?.formattedAddress || address || '';
     setNewAddress(addressText);
@@ -123,16 +118,16 @@ export default function CheckoutTab({
     calculateShippingCost(addressText);
   };
 
-  // Расчет стоимости доставки
+  //Внедрить реальый рассчет
   const calculateShippingCost = (address) => {
     if (address && (address.includes('Москва') || address.includes('Санкт-Петербург'))) {
-      setShippingCost(300);
+      setShippingCost(0);
     } else {
-      setShippingCost(500);
+      setShippingCost(300);
     }
   };
 
-  // Создание заказа и переход к оплате
+  //создание заказа и переход к оплате
   const handleCreateOrderAndPay = async () => {
     if (!selectedAddressText) {
       alert('Пожалуйста, выберите или введите адрес доставки');
@@ -145,18 +140,16 @@ export default function CheckoutTab({
 
     setIsProcessing(true);
     try {
-      // Подготавливаем данные для заказа
+      //данные для заказа
       const orderData = prepareOrderData();
       console.log('Отправка заказа на сервер:', orderData);
 
-      // Создаем заказ через orderService
       const createdOrder = await orderService.create(orderData);
       console.log('Заказ успешно создан:', createdOrder);
-      
-      // Сохраняем созданный заказ
+
       setCreatedOrder(createdOrder);
       
-      // Показываем модальное окно оплаты
+      //модальное окно оплаты
       setShowMockPayment(true);
 
     } catch (error) {
@@ -167,19 +160,19 @@ export default function CheckoutTab({
     }
   };
 
-  // Обработчик успешной оплаты
+  //обработчик успешной оплаты
   const handlePaymentSuccess = (paymentResult) => {
     console.log('Оплата прошла успешно:', paymentResult);
     createdOrder.status = "paid";
     const updated = orderService.updateOrderById(createdOrder.id, createdOrder);
     setCreatedOrder(createdOrder);
-    // Очищаем корзину
+    //очищаем корзину
     clearCart();
     
-    // Скрываем модалку
+    //скрываем модалку
     setShowMockPayment(false);
     
-    // Вызываем callback для очистки данных на странице
+    //вызываем callback для очистки данных на странице
     if (onConfirmOrder && createdOrder) {
       onConfirmOrder(createdOrder);
     }
@@ -187,7 +180,7 @@ export default function CheckoutTab({
     alert(`✅ Заказ №${createdOrder?.orderNumber || createdOrder?.id} успешно оплачен!`);
   };
 
-  // Обработчик отмены оплаты
+  //обработчик отмены оплаты
   const handlePaymentCancel = () => {
     setShowMockPayment(false);
     alert('Оплата отменена');
@@ -206,7 +199,6 @@ export default function CheckoutTab({
         </button>
       </div>
 
-      {/* Информация о покупателе */}
       <div className={styles.userInfo}>
         <div className={styles.infoCard}>
           <h4>Информация о покупателе</h4>
@@ -227,7 +219,7 @@ export default function CheckoutTab({
         </div>
       </div>
 
-      {/* Состав заказа */}
+      {/*состав заказа*/}
       <div className={styles.orderSummary}>
         <h4>Состав заказа:</h4>
         <div className={styles.itemsList}>
@@ -248,7 +240,7 @@ export default function CheckoutTab({
           ))}
         </div>
 
-        {/* Итоговая сумма */}
+        {/*итоговая сумма */}
         <div className={styles.totalSummary}>
           <div className={styles.totalRow}>
             <span>Сумма товаров:</span>
@@ -278,11 +270,9 @@ export default function CheckoutTab({
         </div>
       </div>
 
-      {/* Выбор адреса доставки */}
       <div className={styles.deliverySection}>
         <h4>Выберите адрес доставки:</h4>
         
-        {/* Сохраненные адреса */}
         {!loadingAddresses && userAddresses.length > 0 && (
           <div className={styles.savedAddresses}>
             <h5>Ваши сохраненные адреса:</h5>
@@ -310,7 +300,7 @@ export default function CheckoutTab({
           </div>
         )}
 
-        {/* Выбор нового адреса */}
+        {/*выбор нового адреса */}
         <div className={styles.newAddressSection}>
           <div 
             className={`${styles.addressOption} ${useNewAddress ? styles.selected : ''}`}
@@ -362,7 +352,6 @@ export default function CheckoutTab({
         )}
       </div>
 
-      {/* Кнопки действий */}
       <div className={styles.actionButtons}>
         <button
           onClick={onCancelOrder}
@@ -381,7 +370,6 @@ export default function CheckoutTab({
         </button>
       </div>
 
-      {/* Информация о заказе */}
       {createdOrder && !showMockPayment && (
         <div className={styles.orderInfo}>
           <h4>✅ Заказ оформлен</h4>
@@ -397,7 +385,7 @@ export default function CheckoutTab({
         </div>
       )}
 
-      {/* Модальное окно оплаты */}
+      {/*модалка оплаты*/}
       {showMockPayment && createdOrder && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>

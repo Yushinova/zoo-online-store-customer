@@ -18,20 +18,19 @@ export class AddressService {
 
       console.log(`Статус ответа: ${response.status}`);
       
-      // Если статус 204 - нет контента (адресов нет)
+      //обработка ошибок
       if (response.status === 204) {
         console.log(`Нет адресов для юзера ${userId}`);
         return [];
       }
       
-      // Если статус 404 - юзер не найден или нет заказов
       if (response.status === 404) {
         console.log(`юзер ${userId} не найден или нет адресов`);
         return [];
       }
       
       if (!response.ok) {
-        // Пробуем получить текст ошибки
+        //пробуем получить текст ошибки
         let errorMessage = `Ошибка HTTP! статус: ${response.status}`;
         try {
           const errorText = await response.text();
@@ -44,17 +43,17 @@ export class AddressService {
             }
           }
         } catch {
-          // Если не удалось прочитать текст ошибки
+          //не удалось прочитать текст ошибки
         }
         console.error(`Ошибка загрузки адресов: ${errorMessage}`);
-        // Возвращаем пустой массив вместо выброса ошибки
+        //пустой массив вместо выброса ошибки
         return [];
       }
 
       const addresses = await response.json();
       console.log(`адреса успешно загружены для юзера ${userId}:`, addresses);
       
-      // Проверяем, что пришел массив
+      //проверяем, что пришел массив
       if (!Array.isArray(addresses)) {
         console.warn('Ожидался массив заказов, но получено:', typeof addresses);
         return [];
@@ -64,12 +63,10 @@ export class AddressService {
 
     } catch (error) {
       console.error(`Ошибка загрузки заказов для юзера ${userId}:`, error);
-      // Возвращаем пустой массив в случае ошибки
       return [];
     }
   }
   
-  // Метод для создания адреса
   async create(addressData) {
     try {
       const response = await fetch(`${this.baseUrl}${API_CONFIG.ADDRESSES.BASE}`, {
@@ -94,7 +91,7 @@ export class AddressService {
             }
           }
         } catch {
-          // Если не удалось прочитать текст ошибки
+
         }
         throw new Error(errorMessage);
       }
