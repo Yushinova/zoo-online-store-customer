@@ -94,7 +94,7 @@ export default function ProductGrid({
         if (page === 1) {
           setProducts(productsData);
         } else {
-          setProducts(prev => [...prev, ...productsData]);
+          setProducts(prev => [...prev, ...productsData]);//добавляем к предыдущим новые продукты
         }
         
         if (productsData.length === 0 || productsData.length < pageSize) {
