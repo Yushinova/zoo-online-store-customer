@@ -1,5 +1,5 @@
 const FAVOURITES_KEY = 'pet_shop_favourites';
-const MAX_FAVOURITES = 10;
+const MAX_FAVOURITES = 12;
 
 //отправка события обновления избранного
 const dispatchFavouritesUpdateEvent = () => {

@@ -106,10 +106,10 @@ const Header = () => {
               className={styles.socialIcon}
             />
           </a>
-          <a href="https://vk.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+          <a href="https://web.max.ru/" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
             <Image
-              src="/ws.png"
-              alt="WhatsApp"
+              src="/max.png"
+              alt="Max"
               width={28}
               height={28}
               className={styles.socialIcon}

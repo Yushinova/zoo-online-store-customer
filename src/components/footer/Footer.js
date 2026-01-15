@@ -39,8 +39,8 @@ const Footer = () => {
                 <a href="https://t.me" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
                   <Image src="/tg.png" alt="Telegram" width={25} height={25} />
                 </a>
-                <a href="https://vk.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                  <Image src="/ws.png" alt="WhatsApp" width={25} height={25} />
+                <a href="https://web.max.ru/" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                  <Image src="/max.png" alt="Max" width={25} height={25} />
                 </a>
                 <a href="https://vk.com" target="_blank" rel="noopener noreferrer" className={styles.vkLink}>
                   VK
