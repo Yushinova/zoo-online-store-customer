@@ -692,3 +692,14 @@
 .notificationError {
   background: #dc3545;
 }
+
+.checkIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.favoriteButton.active {
+  background-color: #fff5f5;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}

@@ -18,7 +18,7 @@ export function UserProvider({ children }) {
     isClient: false
   });
 
-  // useRef для хранения кэша между рендерами
+  //useRef для хранения кэша между рендерами
   const userCache = useRef({
     data: null,
     timestamp: 0

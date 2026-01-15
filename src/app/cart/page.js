@@ -42,7 +42,7 @@ export default function CartPage() {
       }
 
       //детали всех товаров в корзине
-      const itemsWithDetails = await Promise.all(
+      const itemsWithDetails = (await Promise.all(
         cart.map(async (item) => {
           try {
             const product = await productService.getByIdWithAllInfo(item.productId);
@@ -64,24 +64,11 @@ export default function CartPage() {
             };
           } catch (err) {
             console.error(`Error loading product ${item.productId}:`, err);
-            return {
-              ...item,
-              product: {
-                id: item.productId,
-                name: `Товар ${item.productId} (недоступен)`,
-                description: 'Товар временно недоступен',
-                price: 0,
-                brand: '',
-                rating: 0,
-                isPromotion: false,
-                isActive: false,
-                productImages: [],
-                petTypes: []
-              }
-            };
+            removeFromCart(item.productId);
+            return null;
           }
         })
-      );
+      )).filter(item => item !== null);
 
       setCartItems(itemsWithDetails);
       calculateTotal(itemsWithDetails);

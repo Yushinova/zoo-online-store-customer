@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@/app/providers/UserProvider';
 import AddressInput from '@/components/yandex/AddressInput';
 import { addressService } from '@/api/addressService';
 import { orderService } from '@/api/orderService';
@@ -15,6 +16,7 @@ export default function CheckoutTab({
   onCancelOrder, 
   userId 
 }) {
+  const { refetch } = useUser();
   const [isProcessing, setIsProcessing] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
@@ -39,6 +41,7 @@ export default function CheckoutTab({
         if (addresses && addresses.length > 0) {
           setSelectedAddressId(addresses[0].id);
           setSelectedAddressText(addresses[0].fullAddress);
+          calculateShippingCost(addresses[0].fullAddress);
         }
       } catch (error) {
         console.error('Ошибка загрузки адресов:', error);
@@ -168,7 +171,7 @@ export default function CheckoutTab({
     setCreatedOrder(createdOrder);
     //очищаем корзину
     clearCart();
-    
+    refetch();
     //скрываем модалку
     setShowMockPayment(false);
     

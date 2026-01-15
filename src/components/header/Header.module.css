@@ -42,6 +42,7 @@
 /* Часть 2: Поиск */
 .searchSection {
   justify-content: center;
+  visibility: hidden;
 }
 
 .searchForm {
@@ -364,4 +365,16 @@
   .socialWrapper {
     gap: 15px;
   }
+}
+
+.favouritesIcon {
+  width: 28px;
+  height: 28px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.favouritesLink:hover .favouritesIcon {
+  opacity: 1;
+  transform: scale(1.1);
 }

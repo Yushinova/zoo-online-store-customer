@@ -5,38 +5,57 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useUser } from '@/app/providers/UserProvider';
 import { getCartItemsCount } from '@/utils/cart';
+import { getFavouritesCount } from '@/utils/favourites'; // Импортируем функцию
 import styles from './Header.module.css';
 
 const Header = () => {
   const { user, loading } = useUser();
   const [cartCount, setCartCount] = useState(0);
+  const [favouritesCount, setFavouritesCount] = useState(0); // Новое состояние
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    //получаем количество товаров в корзине
+    // Получаем количество товаров в корзине
     setCartCount(getCartItemsCount());
+    // Получаем количество избранных товаров
+    setFavouritesCount(getFavouritesCount());
     
-    //изменения в localStorage для обновления счетчика
-    const handleStorageChange = () => {
+    // Изменения в localStorage для обновления счетчика корзины
+    const handleCartStorageChange = () => {
       setCartCount(getCartItemsCount());
     };
     
-    window.addEventListener('storage', handleStorageChange);
+    // Изменения в localStorage для обновления счетчика избранного
+    const handleFavouritesStorageChange = () => {
+      setFavouritesCount(getFavouritesCount());
+    };
     
-    //кастомное событие для обновления корзины
-    window.addEventListener('cartUpdated', handleStorageChange);
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'pet_shop_cart') {
+        handleCartStorageChange();
+      }
+      if (event.key === 'pet_shop_favourites') {
+        handleFavouritesStorageChange();
+      }
+    });
+    
+    // Кастомные события для обновления
+    window.addEventListener('cartUpdated', handleCartStorageChange);
+    window.addEventListener('favouritesUpdated', handleFavouritesStorageChange);
     
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('cartUpdated', handleStorageChange);
+      window.removeEventListener('storage', handleCartStorageChange);
+      window.removeEventListener('cartUpdated', handleCartStorageChange);
+      window.removeEventListener('favouritesUpdated', handleFavouritesStorageChange);
     };
   }, []);
 
-  //обновлять счетчик при каждом рендере
+  // Обновлять счетчики при каждом рендере
   useEffect(() => {
     if (isMounted) {
       setCartCount(getCartItemsCount());
+      setFavouritesCount(getFavouritesCount());
     }
   });
 
@@ -121,7 +140,24 @@ const Header = () => {
             )}
           </Link>
         </div>
-        
+        <div className={styles.favouritesWrapper}>
+          <Link href="/favourites" className={styles.favouritesLink}>
+            <div className={styles.favouritesContainer}>
+              <Image
+                src="/heart-icon.png"
+                alt="Избранное"
+                width={28}
+                height={28}
+                className={styles.favouritesIcon}
+              />
+              {favouritesCount > 0 && (
+                <span className={styles.favouritesCount}>
+                  {favouritesCount > 99 ? '99+' : favouritesCount}
+                </span>
+              )}
+            </div>
+          </Link>
+        </div>
         <div className={styles.cartWrapper}>
           <Link href="/cart" className={styles.cartLink}>
             <div className={styles.cartContainer}>

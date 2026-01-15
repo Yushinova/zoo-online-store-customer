@@ -10,6 +10,10 @@ import {
   addToCart, 
   getCartItemQuantity 
 } from '@/utils/cart';
+import {
+   addToFavourites,
+   isInFavourites
+} from '@/utils/favourites';
 import styles from './ProductModal.module.css';
 
 const ProductModal = ({ productId, onClose, onProductUpdated }) => {
@@ -25,7 +29,9 @@ const ProductModal = ({ productId, onClose, onProductUpdated }) => {
   const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
   const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
+  //избранное
+  const [addingToFavourite, setAddingToFavourite] = useState(false);
+  const [isFavourite, setIsFavourite] = useState(false);
   useEffect(() => {
     if (productId) {
       setIsVisible(true);
@@ -37,9 +43,11 @@ const ProductModal = ({ productId, onClose, onProductUpdated }) => {
   useEffect(() => {
     if (product) {
       setCartQuantity(getCartItemQuantity(product.id));
+      setIsFavourite(isInFavourites(product.id));
       fetchTotalReviews(product.id);
     }
   }, [product]);
+
 
   const fetchProductData = async (id) => {
     try {
@@ -111,7 +119,35 @@ const refreshProductData = async () => {
   const handleModalClick = (e) => {
     e.stopPropagation();
   };
+  //добавление в избранное
+  const handleAddToFavourites = async (e) => {
+    e.stopPropagation();
+    
+    if (!product.isActive || isFavourite) {
+      return;
+    }
 
+    try {
+      setAddingToFavourite(true);
+      
+      try {
+        // Добавляем в избранное
+        addToFavourites(product.id);
+        setIsFavourite(true);
+        
+        // Отправляем событие обновления
+        window.dispatchEvent(new Event('favouritesUpdated'));
+      } catch (error) {
+        // Если достигнут лимит
+        alert(error.message);
+      }
+      
+    } catch (error) {
+      console.error('Error adding to favourites:', error);
+    } finally {
+      setAddingToFavourite(false);
+    }
+  };
   //добавление в корзину
   const handleAddToCart = async (e) => {
     if (e) e.stopPropagation();
@@ -435,11 +471,32 @@ const refreshProductData = async () => {
                   </div>
                   
                   <div className={styles.secondaryActions}>
-                    <button className={styles.favoriteButton}>
-                      <svg className={styles.heartIcon} viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                      </svg>
-                      В избранное
+                    <button 
+                      className={`${styles.favoriteButton} ${addingToFavourite ? styles.loading : ''} ${isFavourite ? styles.active : ''}`}
+                      onClick={handleAddToFavourites}
+                      disabled={addingToFavourite || !product.isActive}
+                      title={isFavourite ? "Удалить из избранного" : "Добавить в избранное"}
+                    >
+                      {addingToFavourite ? (
+                        <>
+                          <div className={styles.spinnerSmall}></div>
+                          Добавляем...
+                        </>
+                      ) : isFavourite ? (
+                        <>
+                          <svg className={styles.checkIcon} viewBox="0 0 24 24" fill="#ff6b6b">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                          </svg>
+                          В избранном
+                        </>
+                      ) : (
+                        <>
+                          <svg className={styles.heartIcon} viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" strokeWidth="2">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                          </svg>
+                          В избранное
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
