@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ProductCard from '@/components/product/ProductCard';
+import ProductModal from '@/components/product/ProductModal';
 import { 
   getFavouritesCount, 
   loadFavouriteProducts,
@@ -11,11 +12,14 @@ import {
 import styles from './page.module.css';
 import { productService } from '@/api/productService';
 import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
 export default function FavouritesPage() {
+  const router = useRouter();
   const [favouriteProducts, setFavouriteProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   
   //загружаем избранные товары
   const loadFavourites = async () => {
@@ -51,22 +55,41 @@ export default function FavouritesPage() {
     };
   }, []);
   
-  //обработчик клика по товару
+  //обработчик клика по товару - открываем модалку с productId
   const handleProductClick = (product) => {
     if (product.error || !product.isActive) return;
-    window.location.href = `/products/${product.id}`;
+    setSelectedProductId(product.id);
+    setShowModal(true);
+  };
+  
+  //закрытие модалки
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedProductId(null);
+  };
+  
+  //обработчик обновления товара (например, после добавления в корзину в модалке)
+  const handleProductUpdated = () => {
+    console.log('Товар обновлен в модалке');
   };
   
   //обработчик обновления корзины
   const handleCartUpdate = (data) => {
     window.dispatchEvent(new Event('cartUpdated'));
   };
-  
+  const handleToCart = ()=>{
+    router.push('/cart');
+  }
   //удалить товар из избранного
   const handleRemoveFromFavourites = (productId, e) => {
     if (e) e.stopPropagation();
     if (window.confirm('Удалить товар из избранного?')) {
       removeFromFavourites(productId);
+      // Если удаляем товар, который сейчас открыт в модалке - закрываем модалку
+      if (selectedProductId === productId) {
+        setShowModal(false);
+        setSelectedProductId(null);
+      }
     }
   };
   
@@ -76,6 +99,11 @@ export default function FavouritesPage() {
     
     if (window.confirm(`Удалить все товары (${favouriteProducts.length} шт.) из избранного?`)) {
       clearFavourites();
+      // Закрываем модалку, если она была открыта
+      if (showModal) {
+        setShowModal(false);
+        setSelectedProductId(null);
+      }
     }
   };
   
@@ -161,6 +189,11 @@ export default function FavouritesPage() {
             >
               Очистить все ({favouritesCount})
             </button>
+            <button
+               className={styles.cartButton}
+               onClick={handleToCart}>
+              В корзину
+            </button>
           </div>
           
           {loadedCount < favouritesCount && (
@@ -177,12 +210,21 @@ export default function FavouritesPage() {
                 key={product.id} 
                 product={product}
                 onRemove={handleRemoveFromFavourites}
-                onClick={handleProductClick}
+                onClick={() => handleProductClick(product)}
                 onCartUpdate={handleCartUpdate}
               />
             ))}
           </div>
         </>
+      )}
+      
+      {/* Модальное окно просмотра товара */}
+      {showModal && selectedProductId && (
+        <ProductModal
+          productId={selectedProductId} // Передаем ID вместо объекта
+          onClose={handleCloseModal}
+          onProductUpdated={handleProductUpdated}
+        />
       )}
     </div>
   );
@@ -205,7 +247,7 @@ function ProductItem({ product, onRemove, onClick, onCartUpdate }) {
       
       <ProductCard
         product={product}
-        onClick={() => onClick(product)}
+        onClick={onClick}
         onCartUpdate={onCartUpdate}
         size="medium"
       />

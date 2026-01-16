@@ -1,8 +1,10 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { productService } from '@/api/productService';
 import { categoryService } from '@/api/categoryService';
 import { feedbackService } from '@/api/feedbackService';
+import { useUser } from '@/app/providers/UserProvider';
 import ImageProductSlider from '@/components/product/ImageProductSlider';
 import ReviewsModal from '../review/ReviewsModal';
 import AddReviewModal from '../review/AddReviewModal';
@@ -17,6 +19,8 @@ import {
 import styles from './ProductModal.module.css';
 
 const ProductModal = ({ productId, onClose, onProductUpdated }) => {
+  const router = useRouter();
+  const {user} = useUser();
   const [product, setProduct] = useState(null);
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +33,7 @@ const ProductModal = ({ productId, onClose, onProductUpdated }) => {
   const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
   const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   //избранное
   const [addingToFavourite, setAddingToFavourite] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false);
@@ -134,7 +139,7 @@ const refreshProductData = async () => {
         // Добавляем в избранное
         addToFavourites(product.id);
         setIsFavourite(true);
-        
+        showNotification('Товар добавлен в избранное!');
         // Отправляем событие обновления
         window.dispatchEvent(new Event('favouritesUpdated'));
       } catch (error) {
@@ -143,7 +148,7 @@ const refreshProductData = async () => {
       }
       
     } catch (error) {
-      console.error('Error adding to favourites:', error);
+      console.error('Ошибка добавления в избранное:', error);
     } finally {
       setAddingToFavourite(false);
     }
@@ -159,10 +164,8 @@ const refreshProductData = async () => {
 
     try {
       setAddingToCart(true);
-      
       //добавляем товар в корзину
       addToCart(product.id, 1);
-      
       //обновляем состояние
       setCartQuantity(getCartItemQuantity(product.id));
       
@@ -175,7 +178,7 @@ const refreshProductData = async () => {
       setAddingToCart(false);
     }
   };
- 
+
   //новое///
   const handleReviewAdded = () => {
   
@@ -191,18 +194,51 @@ const refreshProductData = async () => {
     showNotification('Отзыв успешно добавлен!', 'success');
   });
 };
-
+//купить сейчас
   const handleBuyNow = () => {
     if (!product || !product.isActive) {
       showNotification('Товар временно недоступен', 'error');
       return;
     }
 
-    if (cartQuantity === 0) {
-      addToCart(product.id, 1);
-      setCartQuantity(getCartItemQuantity(product.id));
+    if (!user) {
+      //перенаправляем на страницу входа
+      const returnUrl = encodeURIComponent('/cart');
+      router.push(`/auth`);
+      return;
     }
-    
+
+    setCheckoutLoading(true);
+    try {
+      //данные для передачи
+      const checkoutData = {
+        items: [{
+          productId: product.id,
+          quantity: 1, // Количество товара
+          product: {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            productImages: product.productImages
+          }
+        }],
+        totalAmount: product.price,
+        totalItems: 1,
+        timestamp: new Date().toISOString()
+      };
+
+      //сохраняем данные в sessionStorage для передачи на следующую страницу
+      sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+
+      //на страницу оформления заказа
+      router.push('/personal');
+
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      alert('Произошла ошибка при оформлении заказа');
+    } finally {
+      setCheckoutLoading(false);
+    }
     handleClose();
   };
 

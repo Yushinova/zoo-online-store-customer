@@ -117,7 +117,7 @@ export default function SidebarFilters({
       name: '',
       rating: '',
       brand: '',
-      minPrice: '',
+      minPrice: '0',
       maxPrice: '',
       isActive: ''
     };

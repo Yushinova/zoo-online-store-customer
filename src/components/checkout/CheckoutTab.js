@@ -60,7 +60,7 @@ export default function CheckoutTab({
       minimumFractionDigits: 0,
     }).format(price);
   };
-
+//пока дисконт не считаем
   const calculateDiscountedPrice = (total) => {
     if (userData.discont > 0) {
       const discount = total * (userData.discont / 100);
@@ -94,7 +94,7 @@ export default function CheckoutTab({
     //TODO: импоритроват OrderRequest!!!!
     const orderData = {
       shippingCost: shippingCost,
-      amount: discountedTotal + shippingCost,
+      amount: discountedTotal,
       status: 'pending',
       shippingAddress: selectedAddressText,
       userId: userId,
@@ -198,7 +198,7 @@ export default function CheckoutTab({
       <div className={styles.header}>
         <h3 className={styles.title}>Оформление заказа</h3>
         <button onClick={onCancelOrder} className={styles.backButton}>
-          ← Вернуться в корзину
+          ← Вернуться к покупкам
         </button>
       </div>
 
@@ -393,7 +393,7 @@ export default function CheckoutTab({
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <MockPayment
-              amount={totalWithShipping}
+              amount={finalAmount + shippingCost}
               orderId={createdOrder.orderNumber || createdOrder.id}
               onSuccess={handlePaymentSuccess}
               onCancel={handlePaymentCancel}

@@ -137,10 +137,10 @@ export default function PersonalPage() {
       };
 
         const handleCancelOrder = () => {
-        if (confirm('Отменить оформление заказа и вернуться в корзину?')) {
+        if (confirm('Отменить оформление заказа и вернуться к покупкам?')) {
             sessionStorage.removeItem('checkoutData');
             setCheckoutData(null);
-            router.push('/cart'); //на страницу корзины
+            router.push('/'); //на страницу корзины
         }
   };
 
@@ -236,13 +236,13 @@ export default function PersonalPage() {
           <div className={styles.tabContent}>
             <h3 className={styles.tabTitle}>Личные данные</h3>
             <div className={styles.profileInfo}>
+              {/*
               <div className={styles.infoCard}>
                 <div className={styles.infoRow}>
                   <span className={styles.infoLabel}>ID:</span>
                   <span className={styles.infoValue}>{userData.id}</span>
                 </div>
-              </div>
-
+              </div>*/}
               <div className={styles.infoCard}>
                 <div className={styles.infoRow}>
                   <span className={styles.infoLabel}>Имя:</span>
